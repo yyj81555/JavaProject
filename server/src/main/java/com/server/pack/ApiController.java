@@ -10,6 +10,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ApiController {
@@ -26,9 +30,10 @@ public class ApiController {
     }
 
     @RequestMapping(value = "/api/getDogBreed", method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
-    public String GetDogBreed() {
-        String result = "";
+    public Map<String, Object> GetDogBreed() {
+        List result = new ArrayList();
+        ResultSet rs = null;
+        Map<String, Object> response = new HashMap<>();
         try {
             Class.forName(DBDriver);
             Connection conn = DriverManager.getConnection(url, user, password);
@@ -37,16 +42,17 @@ public class ApiController {
 
             String sql = "SELECT id, breed FROM dogbreed";
 
-            ResultSet rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(sql);
 
             while(rs.next()) {
                 int id = rs.getInt(1);
                 String breed = rs.getString(2);
 
-                result += id + " : " + breed + "\n";
+                result.add(breed);
             }
+            response.put("data", result);
         } catch (Exception e) {};
 
-        return result;
+        return response;
     }
 }
