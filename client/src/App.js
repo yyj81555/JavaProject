@@ -8,6 +8,7 @@ import { AppBar, Toolbar, Typography } from '@mui/material';
 import { Button } from '@mui/material';
 
 import AddProductPage from './Component/AddProductPage';
+import LoginPage from './Component/LoginPage';
 
 export default function App(props) {
   const [dogBreed, setDogBreed] = React.useState([]);
@@ -29,8 +30,13 @@ export default function App(props) {
           </Button>
         </Link>
         <Link to={"/AddProduct"}>
-          <Button onClick={() => OnClickDogButton()}>
+          <Button>
             추가
+          </Button>
+        </Link>
+        <Link to={"/Login"}>
+          <Button style={{position: "absolute", right: 10, top: 2}}>
+            로그인
           </Button>
         </Link>
       </>
@@ -73,7 +79,8 @@ export default function App(props) {
         }
 
         <Routes>
-          <Route exact path="/AddProduct" element= { <AddProductPage/>}></Route>
+          <Route exact path="/AddProduct" element= { <AddProductPage/>}/>
+          <Route exact path="/Login" element = { <LoginPage/> }/>
         </Routes>
       </div>
     </BrowserRouter>
