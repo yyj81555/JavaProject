@@ -2,11 +2,12 @@ import './App.css';
 import React from 'react';
 import { useEffect } from 'react';
 import axios from "axios";
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { Button } from '@mui/material';
-import { Box } from '@mui/system';
+
+import AddProductPage from './Component/AddProductPage';
 
 export default function App(props) {
   const [dogBreed, setDogBreed] = React.useState([]);
@@ -22,17 +23,18 @@ export default function App(props) {
   const TopBar = () => {
     return (
       <>
-        <Button onClick={() => OnClickDogButton()}>
-          강아지 
-        </Button>
+        <Link to={"/"}>
+          <Button onClick={() => OnClickDogButton()}>
+            강아지 
+          </Button>
+        </Link>
+        <Link to={"/AddProduct"}>
+          <Button onClick={() => OnClickDogButton()}>
+            추가
+          </Button>
+        </Link>
       </>
     )
-  }
-
-  const ShowDogBreed = () => {
-    if(dogBreed.length > 0) {
-      
-    }
   }
 
   return (
@@ -59,7 +61,6 @@ export default function App(props) {
         >
           <Toolbar style={{padding: "0px", minHeight: "40px", maxHeight: "40px",}}>
             {TopBar()}
-            {ShowDogBreed()}
           </Toolbar>
         </AppBar>
         
@@ -72,8 +73,7 @@ export default function App(props) {
         }
 
         <Routes>
-          <Route path="/AA"></Route>
-          {/* <Route exact path="/Group" element={ <GroupList onPage={() => ChangeBannerControl(1)} openPopup={(title, text) => onClickOpenPopup(title, text)}/> }/> */}
+          <Route exact path="/AddProduct" element= { <AddProductPage/>}></Route>
         </Routes>
       </div>
     </BrowserRouter>
