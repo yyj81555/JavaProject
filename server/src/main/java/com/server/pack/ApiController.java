@@ -1,10 +1,7 @@
 package com.server.pack;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -54,5 +51,23 @@ public class ApiController {
         } catch (Exception e) {};
 
         return response;
+    }
+
+    @RequestMapping(value = "/api/getPostTest", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String GetPostTest(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+
+            Statement stmt = conn.createStatement();
+
+            String sql = "INSERT INTO dogbreed (BREED) VALUE (\"" + body.get("breed") + "\")";
+
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
     }
 }

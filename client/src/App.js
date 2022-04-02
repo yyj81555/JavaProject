@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import axios from "axios";
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, TextField, Toolbar, Typography } from '@mui/material';
 import { Button } from '@mui/material';
 
 import AddProductPage from './Component/AddProductPage';
@@ -13,6 +13,7 @@ import SignUpPage from './Component/SignUpPage';
 
 export default function App(props) {
   const [dogBreed, setDogBreed] = React.useState([]);
+  const [inputBreed, setInputBreed] = React.useState("");
   // useEffect(() => {}, []);
 
   const OnClickDogButton = async () => {
@@ -20,6 +21,16 @@ export default function App(props) {
     const body = response.data;
 
     setDogBreed(body.data);
+  }
+
+  const OnClickPostTest = async () => {
+    const response = await axios.post("/api/getPostTest", {
+      breed: inputBreed,
+      contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
+    });
+    const body = response.data;
+
+    //setDogBreed(body.data);
   }
 
   const TopBar = () => {
@@ -83,6 +94,12 @@ export default function App(props) {
             )
           })
         }
+
+        <TextField onChange={(e) =>  setInputBreed(e.target.value)} placeholder="견종을 입력하세요."/>
+        <br/>
+        <Button onClick={() => OnClickPostTest()}>
+          Post Test
+        </Button>
 
         <Routes>
           <Route exact path="/AddProduct" element= { <AddProductPage/>}/>
