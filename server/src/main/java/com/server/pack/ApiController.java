@@ -2,6 +2,8 @@ package com.server.pack;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -70,4 +72,30 @@ public class ApiController {
 
         return "{\"result\": \"OK\"}";
     }
+
+    @RequestMapping(value = "/api/ProductInfo", method = RequestMethod.POST) //value 는 요청받을 url , method 는 어떤요청으로 받을지 정의 ex) get post
+    @ResponseStatus(value = HttpStatus.OK)
+    public String ImportProductInfo(@RequestBody Map<String, Object> requestData) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+
+            Statement stmt = conn.createStatement();
+
+            System.out.println(requestData.get("dbProductImgUrl"));
+
+            String test = requestData.get("dbProductImgUrl")+requestData.get("dbProductName").toString();
+
+            System.out.println(test);
+
+            String sql = "INSERT INTO product (productName, productPrice) VALUES (\"" + requestData.get("dbProductName") +"\","+ requestData.get("dbProductPrice")  + ")";
+
+            rs = stmt.executeQuery(sql);
+
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
+    }
+
 }
