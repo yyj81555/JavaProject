@@ -1,9 +1,11 @@
 package com.server.pack;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,6 +23,9 @@ public class ApiController {
     private static final String url = "jdbc:mariadb://127.0.0.1:3306/projectdb";
     private static final String user = "root";
     private static final String password = "-1q2w3e4rfv";
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @RequestMapping(value = "/api/test", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
@@ -92,10 +97,54 @@ public class ApiController {
             String sql = "INSERT INTO product (productName, productPrice) VALUES (\"" + requestData.get("dbProductName") +"\","+ requestData.get("dbProductPrice")  + ")";
 
             rs = stmt.executeQuery(sql);
-
         } catch (Exception e) {};
 
         return "{\"result\": \"OK\"}";
     }
 
+
+    @RequestMapping(value = "/api/createUser", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String CreateUser(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+
+            Statement stmt = conn.createStatement();
+
+            String encodedPassword = passwordEncoder.encode(body.get("userPassword"));
+            String sql = "INSERT INTO account (UserID, UserPassword) VALUE (\"" + body.get("userID") + "\",\"" + encodedPassword + "\")";
+
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
+    }
+
+    @RequestMapping(value = "/api/Login", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String Login(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT UserPassword FROM account WHERE UserID = \"" + body.get("userID") + "\"";
+            rs = stmt.executeQuery(sql);
+
+            String DBPassword = "";
+            while(rs.next()) {
+                DBPassword = rs.getString(1);
+            }
+
+            if(DBPassword == "" ||
+                !passwordEncoder.matches(body.get("userPassword"), DBPassword)) {
+                return "{\"result\": \"Fail\"}";
+            }
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
+    }
 }

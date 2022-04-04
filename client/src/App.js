@@ -28,9 +28,8 @@ export default function App(props) {
       breed: inputBreed,
       contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
     });
+    
     const body = response.data;
-
-    //setDogBreed(body.data);
   }
 
   const TopBar = () => {
