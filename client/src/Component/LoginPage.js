@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import { TextField } from '@mui/material';
 import { Button } from 'react-bootstrap';
@@ -26,6 +26,8 @@ export default function LoginPage(props) {
         // init
     }, []);
 
+    
+
     const OnClickLogin = async () => {
         const response = await axios.post("/api/Login", {
             userID: userID,
@@ -34,22 +36,19 @@ export default function LoginPage(props) {
         });
         const body = response.data;
         
+        setMSG(body.result);
+
         if(body.result === "OK") {
             navigate("/");
         }
     }
 
-    const OnClickSignUp = async () => {
-        const response = await axios.post("/api/createUser", {
-            userID: userID,
-            userPassword: userPassword,
-            contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
-        });
-        const body = response.data;
-
-        setMSG(body.result);
-    }
     
+
+    const OnClickSignUp = async () => {
+       
+    }
+     
     return (
         <div style={styles.dimmed_layer_wrapper}>
             <img src='./Image/Logo.png' alt='' style={{width: 120, height: 85, marginTop: 220, marginBottom: 10}}/>
@@ -62,7 +61,9 @@ export default function LoginPage(props) {
             <br/>
             <Button onClick={() => OnClickLogin()} style={{marginTop: 10}}> 로그인 </Button>
             <br/>
+            <Link to={"/SignUp"}>
             <Button onClick={() => OnClickSignUp()} style={{marginTop: 5}}> 회원가입 </Button>
+            </Link>
             <br/>
             <text> {msg} </text>
         </div>

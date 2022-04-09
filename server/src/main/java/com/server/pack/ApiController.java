@@ -22,7 +22,7 @@ public class ApiController {
 
     private static final String url = "jdbc:mariadb://127.0.0.1:3306/projectdb";
     private static final String user = "root";
-    private static final String password = "-1q2w3e4rfv";
+    private static final String password = "123456";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -114,7 +114,9 @@ public class ApiController {
             Statement stmt = conn.createStatement();
 
             String encodedPassword = passwordEncoder.encode(body.get("userPassword"));
-            String sql = "INSERT INTO account (UserID, UserPassword) VALUE (\"" + body.get("userID") + "\",\"" + encodedPassword + "\")";
+
+            String sql = "INSERT INTO account (UserID, UserPassword, Name) VALUE (\"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
+                    "\"" + body.get("name") + "\")";
 
             rs = stmt.executeQuery(sql);
         } catch (Exception e) {};
@@ -147,4 +149,23 @@ public class ApiController {
 
         return "{\"result\": \"OK\"}";
     }
+
+    @RequestMapping(value = "/api/MyPage", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String MyPage(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT UserID FROM account WHERE name = \"" + body.get("name") + "\"";
+            rs = stmt.executeQuery(sql);
+
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
+    }
+
+
 }

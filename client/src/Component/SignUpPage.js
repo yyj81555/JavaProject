@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
-import { Box,TextField } from '@mui/material';
-import { Button } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Button } from 'react-bootstrap';
 
 export default function SignUpPage(props) {
-    const [inputName, setInputName] = React.useState("");
-    const [InputUserID, setInputUserID] = React.useState("");
-    const [InputUserPassword, setInputUserPassword] = React.useState("");
+    const [name, setName] = React.useState("");
+    const [userID, setUserID] = React.useState("");
+    const [userPassword, setUserPassword] = React.useState("");
+    const [msg, setMSG] = React.useState("");
     
     const styles = {
         dimmed_layer_wrapper : {
@@ -20,48 +21,44 @@ export default function SignUpPage(props) {
         },
     };
 
-    const OnClickPostSignUp = async () => {
-        const response = await axios.post("/api/getPostSignUp", {
-          name: inputName,
-          userID: InputUserID,
-          userPassword: InputUserPassword,
-          contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
-        });
-        const body = response.data;
-    
-        //setName(body.data);
-      }
-    const navigate = useNavigate();
-
     React.useEffect(() => {
         // init
     }, []);
     
+    const navigate = useNavigate();
+
+    const OnClickSignUp = async () => {
+        const response = await axios.post("/api/createUser", {
+            userID: userID,
+            userPassword: userPassword,
+            name: name,
+            contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
+        });
+        const body = response.data;
+        
+        setMSG(body.result);
+       
+        if(body.result === "OK") {
+            navigate("/");
+        }
+    }
+    
+    class SignUpPage extends Component {
+        
+    }
+    
     return (
         <div style={styles.dimmed_layer_wrapper}>
-            <Box
-                style = {{
-                    textAlign: "center",
-                    marginTop : "210px",
-                    border: "1px solid #23ff78",
-                    borderRadius: "19px",
-                    minWidth: "50%",
-                    maxWidth: "50%",
-                    minHeight: "50%",
-                    maxHeight: "50%",
-                }}
-            >
-            <TextField Labal="이름" onChange={(e) =>  setInputName(e.target.value)} placeholder="이름을 입력하세요"/>
+             <img src='./Image/ID.png' alt='' style={{width: 35, height: 35, marginTop: 200, marginRight: 13, marginLeft: 2}}/>
+            <TextField placeholder='아이디' style={{marginTop: 200}} onChange={e => setUserID(e.target.value)}/>
             <br/>
-            <TextField Labal="ID" onChange={(e) =>  setInputUserID(e.target.value)} placeholder="아이디를 입력하세요"/>
+            <img src='./Image/Password.png' alt='' style={{width: 40, height: 40, marginTop: 18, marginRight: 10}}/>
+            <TextField placeholder='패스워드' style={{marginTop: 10}} onChange={e => setUserPassword(e.target.value)}/>
             <br/>
-            <TextField Labal="Password" onChange={(e) =>  setInputUserPassword(e.target.value)} placeholder="패스워드를 입력하세요"/>
+            <TextField placeholder='이름' style={{marginTop: 10, marginRight: -50}} onChange={e => setName(e.target.value)}/>
             <br/>
-            <Button onClick={() => OnClickPostSignUp()}>
-            Sign
-            </Button>
-
-            </Box>
+            <Button onClick={() => OnClickSignUp()} style={{marginTop: 5}}> 회원가입 </Button>
+            <text> {msg} </text>
         </div>
     );
 }

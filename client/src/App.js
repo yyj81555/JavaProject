@@ -10,6 +10,7 @@ import { Button } from '@mui/material';
 import AddProductPage from './Component/AddProductPage';
 import LoginPage from './Component/LoginPage';
 import SignUpPage from './Component/SignUpPage';
+import MyPage from './Component/MyPage';
 
 export default function App(props) {
   const [dogBreed, setDogBreed] = React.useState([]);
@@ -43,6 +44,11 @@ export default function App(props) {
         <Link to={"/AddProduct"}>
           <Button>
             추가
+          </Button>
+        </Link>
+        <Link to={"/MyPage"}>
+          <Button style={{position: "absolute", right: 140, top:2}}>
+            MyPage
           </Button>
         </Link>
         <Link to={"/Login"}>
@@ -102,6 +108,7 @@ export default function App(props) {
 
         <Routes>
           <Route exact path="/AddProduct" element= { <AddProductPage/>}/>
+          <Route exact path="/MyPage" element = { <MyPage/> }/>
           <Route exact path="/Login" element = { <LoginPage/> }/>
           <Route exact path="/SignUp" element = { <SignUpPage/> }/>
         </Routes>
