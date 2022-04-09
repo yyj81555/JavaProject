@@ -7,6 +7,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -88,12 +89,6 @@ public class ApiController {
 
             Statement stmt = conn.createStatement();
 
-            System.out.println(requestData.get("dbProductImgUrl"));
-
-            String test = requestData.get("dbProductImgUrl")+requestData.get("dbProductName").toString();
-
-            System.out.println(test);
-
             String sql = "INSERT INTO product (productName, productPrice) VALUES (\"" + requestData.get("dbProductName") +"\","+ requestData.get("dbProductPrice")  + ")";
 
             rs = stmt.executeQuery(sql);
@@ -101,7 +96,6 @@ public class ApiController {
 
         return "{\"result\": \"OK\"}";
     }
-
 
     @RequestMapping(value = "/api/createUser", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
@@ -117,6 +111,7 @@ public class ApiController {
 
             String sql = "INSERT INTO account (UserID, UserPassword, Name) VALUE (\"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
                     "\"" + body.get("name") + "\")";
+
 
             rs = stmt.executeQuery(sql);
         } catch (Exception e) {};

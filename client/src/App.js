@@ -11,6 +11,7 @@ import AddProductPage from './Component/AddProductPage';
 import LoginPage from './Component/LoginPage';
 import SignUpPage from './Component/SignUpPage';
 import MyPage from './Component/MyPage';
+import ProductPage from './Component/ProductPage';
 
 export default function App(props) {
   const [dogBreed, setDogBreed] = React.useState([]);
@@ -22,15 +23,6 @@ export default function App(props) {
     const body = response.data;
 
     setDogBreed(body.data);
-  }
-
-  const OnClickPostTest = async () => {
-    const response = await axios.post("/api/getPostTest", {
-      breed: inputBreed,
-      contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
-    });
-    
-    const body = response.data;
   }
 
   const TopBar = () => {
@@ -49,7 +41,12 @@ export default function App(props) {
         <Link to={"/MyPage"}>
           <Button style={{position: "absolute", right: 140, top:2}}>
             MyPage
-          </Button>
+            </Button>
+        </Link>
+        <Link to={"/product"}>
+          <Button style={{position: "absolute", left: 125, top: 2}}>
+            상세 페이지
+            </Button>
         </Link>
         <Link to={"/Login"}>
           <Button style={{position: "absolute", right: 10, top: 2}}>
@@ -67,7 +64,7 @@ export default function App(props) {
 
   return (
     <BrowserRouter>
-      <div className="App" 
+      <div className="App"
       style={{
         overflow: "auto",
         minWidth: "1920px",
@@ -100,17 +97,12 @@ export default function App(props) {
           })
         }
 
-        <TextField onChange={(e) =>  setInputBreed(e.target.value)} placeholder="견종을 입력하세요."/>
-        <br/>
-        <Button onClick={() => OnClickPostTest()}>
-          Post Test
-        </Button>
-
         <Routes>
           <Route exact path="/AddProduct" element= { <AddProductPage/>}/>
           <Route exact path="/MyPage" element = { <MyPage/> }/>
           <Route exact path="/Login" element = { <LoginPage/> }/>
           <Route exact path="/SignUp" element = { <SignUpPage/> }/>
+          <Route exact path="/product" element = { <ProductPage/> }/>
         </Routes>
       </div>
     </BrowserRouter>
