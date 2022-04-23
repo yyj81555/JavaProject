@@ -3,12 +3,9 @@ import axios from "axios";
 import { useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
-import { autocompleteClasses, Box,TextField } from '@mui/material';
 import { Button } from '@mui/material';
 
-
 export default function ProductPage(props) {
-
     const styles = {
         dimmed_layer_wrapper : {
             position: "fixed",

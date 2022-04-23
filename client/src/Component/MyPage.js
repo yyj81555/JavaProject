@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from "axios";
 
-
 export default function Mypage(props) {
     const [name, setName] = React.useState("");
     const [userID, setUserID] = React.useState("");
