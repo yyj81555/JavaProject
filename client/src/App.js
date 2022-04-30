@@ -32,7 +32,7 @@ export default function App(props) {
     }
   }
   const [showCategory, setShowCategory] = React.useState(false);
-
+  const [file, setFile] = React.useState(null);
   // useEffect(() => {}, []);
 
   const TopBar = () => {
@@ -66,6 +66,23 @@ export default function App(props) {
       </>
     )
   }
+
+  const saveImage = async() => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const config = {
+      headers: {
+          'content-type': 'multipart/form-data'
+      }
+  }
+    await axios.post("/api/SaveImage", formData, config)
+    .then(res => {
+      window.location.reload();
+    })
+    .catch(err =>{
+        console.log(err);
+    })
+}
 
   const showCategoryField = () => {
     return(
@@ -198,7 +215,7 @@ export default function App(props) {
             backgroundColor: "#ffffff",
             width: "100%",
             borderWidth: "0px 0px 2px 0px",
-            borderBottomColor: "green",
+            borderBottomColor: "#ffe4e1",
             borderStyle: "solid", 
             boxShadow: "none",
           }}
@@ -213,10 +230,6 @@ export default function App(props) {
           style={{
             backgroundColor: "#ffffff",
             width: "100%",
-            height: 50,
-            borderWidth: "2px 0px 0px 0px",
-            borderTopColor: "green",
-            borderStyle: "solid", 
             boxShadow: "none",
           }}
         >
@@ -228,6 +241,9 @@ export default function App(props) {
             {showCategory ? showCategoryField() : null}
           </Box>
         </Box>
+
+        <input type="file" file={file} onChange={(e) => {setFile(e.target.files[0]);}}/>
+        <Button placeholder='파일추가' onClick={() => saveImage()}>파일 추가</Button>
 
         <Routes>
           <Route exact path="/AddProduct" element={ <AddProductPage/>}/>

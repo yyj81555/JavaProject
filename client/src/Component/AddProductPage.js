@@ -319,108 +319,106 @@ export default function AddProductPage(props) {
             productLink: productLink,
             contentType: "application/json; UTF-8;",
         })
-            .then(res => {
-                navigate("/");
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        .then(res => {
+            navigate("/");
+        })
+        .catch(err => {
+            console.log(err);
+        })
     }
 
     return (
-        
-            <Box style={styles.add_product_bigbox}>
-                <h3 style={styles.add_product_text}>[상품 추가]</h3>
-                <form method="post" onSubmit={submitHander}>
-                    <div style={styles.add_proudct_sec}>
-                        <div style={styles.first_table_sec}>
-                            <div style={styles.first_explanation_sec}>상품명</div>
-                            <div style={styles.input_textfield_sec}>
-                                <TextField id="standard-basic" label="상품명" variant="standard" fullWidth onChange={(e) => onChangeProductName(e)}/>
-                            </div>
-                            <div style={styles.first_explanation_sec}>상품가격</div>
-                            <div style={styles.input_textfield_sec}>
-                                <TextField id="standard-basic" label="상품가격" variant="standard" fullWidth type="number" onChange={(e) => onChangeProductPrice(e)} />
-                            </div>
+        <Box style={styles.add_product_bigbox}>
+            <h3 style={styles.add_product_text}>[상품 추가]</h3>
+            <form method="post" onSubmit={submitHander}>
+                <div style={styles.add_proudct_sec}>
+                    <div style={styles.first_table_sec}>
+                        <div style={styles.first_explanation_sec}>상품명</div>
+                        <div style={styles.input_textfield_sec}>
+                            <TextField id="standard-basic" label="상품명" variant="standard" fullWidth onChange={(e) => onChangeProductName(e)}/>
                         </div>
-                        <div style={{ width: "auto", height: "50px", marginTop: "11px"}}>
-                            <div style={styles.first_explanation_sec}>브랜드명</div>
-                            <div style={styles.input_textfield_sec}>
-                                <TextField id="standard-basic" label="브랜드명" variant="standard" fullWidth onChange={(e) => onChangeBrandName(e)}/>
-                            </div>
-                            <div style={styles.first_explanation_sec}>원산지</div>
-                            <div style={styles.input_textfield_sec}>
-                                <TextField id="standard-basic" label="원산지" variant="standard" fullWidth onChange={(e) => onChangeOrigin(e)} />
-                            </div>
-                        </div>
-                        <div style={{ width: "auto", height: "50px", marginTop: "11px"}}>
-                            <div style={styles.first_explanation_sec}>무게</div>
-                            <div style={styles.input_textfield_sec}>
-                                <TextField id="standard-basic" label="무게" variant="standard" fullWidth onChange={(e) => onChangeWeight(e)}/>
-                            </div>
-                            <div style={styles.first_explanation_sec}>링크</div>
-                            <div style={styles.input_textfield_sec}>
-                                <TextField id="standard-basic" label="링크" variant="standard" fullWidth onChange={(e) => onChangeLink(e)} />
-                            </div>
-                        </div>
-                        <div style={styles.second_table_sec}>
-                            <div style={styles.second_explanation_sec}>대표 이미지</div>
-                            <div style={styles.second_input_table_sec}> 
-                                <img src={mainImg} ref={mainImgBox} style={styles.input_image_sec}></img>
-                                <input type="file" accept="img/*" ref={mainImgInput} onChange={() => onChangeMainImage()}  style={styles.hide_input} />
-                                <Button variant="contained" ref={mainImgUploadButton} onClick={() => onClickMainImgUpload()} style={styles.product_image_upload_button}>대표 이미지 추가하기</Button>
-                                <Button variant="contained" ref={mainImgDeleteButton} onClick={() => onClickMainImgDelete()} style={styles.product_image_delete_button}> X </Button>
-                            </div>
-                            <div style={styles.second_explanation_sec}>상세 이미지</div>
-                            <div style={styles.second_input_table_sec}> 
-                                <img src={detailImg} ref={detailImgBox}  style={styles.input_image_sec}></img>
-                                <input type="file" accept="img/*" ref={detailImgInput} onChange={() => onChangeDetailImage()} style={styles.hide_input} />
-                                <Button variant="contained" ref={detailImgUploadButton} onClick={() => onClickDetailImgUpload()} style={styles.product_image_upload_button}>상세 이미지 추가하기</Button>
-                                <Button variant="contained" ref={detailImgDeleteButton} onClick={() => onClickDetailImgDelete()} style={styles.product_image_delete_button}> X </Button>
-                            </div>
-                        </div>
-                        <div style={styles.third_table_sec}>
-                            <div style={styles.third_explanation_sec}>best 리뷰</div>
-                            <div style={styles.input_review_info_sec}>        
-                                <Rating name="no-value" value={bestValue} onChange={(event, newValue) => {bestSetValue(newValue)}} style={styles.review_rating}/>
-                                <img src={bestReviewImg} style={styles.input_review_image_sec}></img>
-                                <input type="file" accept="img/*" ref={bestReviewImgInput} onChange={() => onChangeBestReviewImage()} style={styles.hide_input} />
-                                <Button variant="contained" ref={bestReviewImgUploadButton} onClick={() => onClickBestReviewImgUpload()} style={styles.review_image_upload_button}>best 리뷰이미지 추가하기</Button>
-                                <Button variant="contained" ref={bestReviewImgDeleteButton} onClick={() => onClickBestReviewImgDelete()} style={styles.review_image_delete_button}> X </Button>
-                                <TextField
-                                id="standard-multiline-static"
-                                label="best리뷰"
-                                multiline
-                                rows={5}
-                                defaultValue="리뷰를 입력해주세요."
-                                variant="standard"
-                                fullWidth
-                                onChange={(e) => onChangeBestReview(e)}
-                                />
-                            </div>
-                            <div style={styles.third_explanation_sec}>worst 리뷰</div>
-                            <div style={styles.input_review_info_sec}>
-                                <Rating name="no-value" value={worstValue} onChange={(event, newValue) => {worstSetValue(newValue)}} style={styles.review_rating}/>
-                                <img src={worstReviewImg} style={styles.input_review_image_sec}></img>
-                                <input type="file" accept="img/*" ref={worstReivewImgInput} onChange={() => onChangeWorstReviewImage()} style={styles.hide_input} />
-                                <Button variant="contained" ref={worstReviewImgUploadButton} onClick={() => onClickWorstReviewImgUpload()} style={styles.review_image_upload_button}>worst 리뷰이미지 추가하기</Button>
-                                <Button variant="contained" ref={worstReviewImgDeleteButton} onClick={() => onClickWorstReviewImgDelete()} style={styles.review_image_delete_button}> X </Button>
-                                <TextField
-                                id="standard-multiline-static"
-                                label="best리뷰"
-                                multiline
-                                rows={5}
-                                defaultValue="리뷰를 입력해주세요."
-                                variant="standard"
-                                fullWidth
-                                onChange={(e) => onChangeWorstReview(e)}
-                                />
-                            </div>
+                        <div style={styles.first_explanation_sec}>상품가격</div>
+                        <div style={styles.input_textfield_sec}>
+                            <TextField id="standard-basic" label="상품가격" variant="standard" fullWidth type="number" onChange={(e) => onChangeProductPrice(e)} />
                         </div>
                     </div>
-                    <Button type="submit" variant="contained" style={styles.submit_button}>상품 등록하기</Button>
-                </form>
-            </Box>
-        
+                    <div style={{ width: "auto", height: "50px", marginTop: "11px"}}>
+                        <div style={styles.first_explanation_sec}>브랜드명</div>
+                        <div style={styles.input_textfield_sec}>
+                            <TextField id="standard-basic" label="브랜드명" variant="standard" fullWidth onChange={(e) => onChangeBrandName(e)}/>
+                        </div>
+                        <div style={styles.first_explanation_sec}>원산지</div>
+                        <div style={styles.input_textfield_sec}>
+                            <TextField id="standard-basic" label="원산지" variant="standard" fullWidth onChange={(e) => onChangeOrigin(e)} />
+                        </div>
+                    </div>
+                    <div style={{ width: "auto", height: "50px", marginTop: "11px"}}>
+                        <div style={styles.first_explanation_sec}>무게</div>
+                        <div style={styles.input_textfield_sec}>
+                            <TextField id="standard-basic" label="무게" variant="standard" fullWidth onChange={(e) => onChangeWeight(e)}/>
+                        </div>
+                        <div style={styles.first_explanation_sec}>링크</div>
+                        <div style={styles.input_textfield_sec}>
+                            <TextField id="standard-basic" label="링크" variant="standard" fullWidth onChange={(e) => onChangeLink(e)} />
+                        </div>
+                    </div>
+                    <div style={styles.second_table_sec}>
+                        <div style={styles.second_explanation_sec}>대표 이미지</div>
+                        <div style={styles.second_input_table_sec}> 
+                            <img src={mainImg} ref={mainImgBox} style={styles.input_image_sec}></img>
+                            <input type="file" accept="img/*" ref={mainImgInput} onChange={() => onChangeMainImage()}  style={styles.hide_input} />
+                            <Button variant="contained" ref={mainImgUploadButton} onClick={() => onClickMainImgUpload()} style={styles.product_image_upload_button}>대표 이미지 추가하기</Button>
+                            <Button variant="contained" ref={mainImgDeleteButton} onClick={() => onClickMainImgDelete()} style={styles.product_image_delete_button}> X </Button>
+                        </div>
+                        <div style={styles.second_explanation_sec}>상세 이미지</div>
+                        <div style={styles.second_input_table_sec}> 
+                            <img src={detailImg} ref={detailImgBox}  style={styles.input_image_sec}></img>
+                            <input type="file" accept="img/*" ref={detailImgInput} onChange={() => onChangeDetailImage()} style={styles.hide_input} />
+                            <Button variant="contained" ref={detailImgUploadButton} onClick={() => onClickDetailImgUpload()} style={styles.product_image_upload_button}>상세 이미지 추가하기</Button>
+                            <Button variant="contained" ref={detailImgDeleteButton} onClick={() => onClickDetailImgDelete()} style={styles.product_image_delete_button}> X </Button>
+                        </div>
+                    </div>
+                    <div style={styles.third_table_sec}>
+                        <div style={styles.third_explanation_sec}>best 리뷰</div>
+                        <div style={styles.input_review_info_sec}>        
+                            <Rating name="no-value" value={bestValue} onChange={(event, newValue) => {bestSetValue(newValue)}} style={styles.review_rating}/>
+                            <img src={bestReviewImg} style={styles.input_review_image_sec}></img>
+                            <input type="file" accept="img/*" ref={bestReviewImgInput} onChange={() => onChangeBestReviewImage()} style={styles.hide_input} />
+                            <Button variant="contained" ref={bestReviewImgUploadButton} onClick={() => onClickBestReviewImgUpload()} style={styles.review_image_upload_button}>best 리뷰이미지 추가하기</Button>
+                            <Button variant="contained" ref={bestReviewImgDeleteButton} onClick={() => onClickBestReviewImgDelete()} style={styles.review_image_delete_button}> X </Button>
+                            <TextField
+                            id="standard-multiline-static"
+                            label="best리뷰"
+                            multiline
+                            rows={5}
+                            defaultValue="리뷰를 입력해주세요."
+                            variant="standard"
+                            fullWidth
+                            onChange={(e) => onChangeBestReview(e)}
+                            />
+                        </div>
+                        <div style={styles.third_explanation_sec}>worst 리뷰</div>
+                        <div style={styles.input_review_info_sec}>
+                            <Rating name="no-value" value={worstValue} onChange={(event, newValue) => {worstSetValue(newValue)}} style={styles.review_rating}/>
+                            <img src={worstReviewImg} style={styles.input_review_image_sec}></img>
+                            <input type="file" accept="img/*" ref={worstReivewImgInput} onChange={() => onChangeWorstReviewImage()} style={styles.hide_input} />
+                            <Button variant="contained" ref={worstReviewImgUploadButton} onClick={() => onClickWorstReviewImgUpload()} style={styles.review_image_upload_button}>worst 리뷰이미지 추가하기</Button>
+                            <Button variant="contained" ref={worstReviewImgDeleteButton} onClick={() => onClickWorstReviewImgDelete()} style={styles.review_image_delete_button}> X </Button>
+                            <TextField
+                            id="standard-multiline-static"
+                            label="best리뷰"
+                            multiline
+                            rows={5}
+                            defaultValue="리뷰를 입력해주세요."
+                            variant="standard"
+                            fullWidth
+                            onChange={(e) => onChangeWorstReview(e)}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <Button type="submit" variant="contained" style={styles.submit_button}>상품 등록하기</Button>
+            </form>
+        </Box>
     );
 }

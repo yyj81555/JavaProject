@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { TextField } from '@mui/material';
 import { Button } from 'react-bootstrap';
 
-
 export default function SignUpPage(props) {
     const [name, setName] = React.useState("");
     const [userID, setUserID] = React.useState("");
@@ -24,8 +23,6 @@ export default function SignUpPage(props) {
     const [companyName,setCompanyName] = React.useState("");
     const [businessName,setBusinessName] = React.useState("");
     const [companyNumber,setCompanyNumber] = React.useState("");
-
-
     
     const styles = {
         dimmed_layer_wrapper : {
@@ -51,10 +48,7 @@ export default function SignUpPage(props) {
     
     const navigate = useNavigate();
 
-    
-
-   
-const OnClickSignUp = async () => {
+    const OnClickSignUp = async () => {
     let formData = null;
 
     if(value === 1) {

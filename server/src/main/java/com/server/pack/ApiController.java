@@ -1,13 +1,16 @@
 package com.server.pack;
 
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -126,7 +129,6 @@ public class ApiController {
                     "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\")";
 
 
-
             rs = stmt.executeQuery(sql);
         } catch (Exception e) {};
 
@@ -222,4 +224,17 @@ public class ApiController {
         return response;
     }
 
+    @RequestMapping(value = "/api/SaveImage", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String SaveImage(@RequestParam("file") MultipartFile multipartFile) {
+        File targetFile = new File("../client/public/Image/Product/" + multipartFile.getOriginalFilename());
+        try {
+            InputStream fileStream = multipartFile.getInputStream();
+            FileUtils.copyInputStreamToFile(fileStream, targetFile);
+        } catch (IOException e) {
+            FileUtils.deleteQuietly(targetFile);
+            e.printStackTrace();
+        }
+        return "{\"result\": \"OK\"}";
+    }
 }
