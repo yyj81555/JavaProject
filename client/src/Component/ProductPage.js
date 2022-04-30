@@ -1,14 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from "axios";
 import { useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
-
-import { Button } from '@mui/material';
+import Rating from '@mui/material/Rating';
+import { Button, Hidden } from '@mui/material';
 
 export default function ProductPage(props) {
     const styles = {
         dimmed_layer_wrapper : {
-            position: "fixed",
             top:80,
             right:0,
             bottom:0,
@@ -32,8 +31,7 @@ export default function ProductPage(props) {
             display: "inline-block",
             border: "1px solid red",
             width: "500px",
-            minHeight: "500px",
-            maxHeight: "500px",
+            height: "auto",
             margin: "auto",
             marginTop: "50px",
         },
@@ -75,7 +73,7 @@ export default function ProductPage(props) {
         content_detail_big_box : {
             border: "1px solid red",
             width: "1200px",
-            height: "3000px",
+            height: "auto",
             margin: "auto",
             textAlign: "left",
         },
@@ -94,14 +92,15 @@ export default function ProductPage(props) {
             margin: "auto",
             border: "1px solid blue",
             width: "1200px",
+            height: "auto",
             textAlign: "center",
+            paddingTop: "50px"
         },
         content_detail_img : {
             border: "1px solid orange",
             width: "860px",
             height: "600px",
-            margin: "auto",
-            marginTop: "50px",
+            overflowY: "hidden"
         },
         content_open_close_button_area : {
             margin: "auto",
@@ -134,16 +133,52 @@ export default function ProductPage(props) {
             height: "235px",
         },
     };
+    
+
+    const [productName, getProductName] = React.useState("");
+    const [productPrice, getProductPrice] = React.useState("");
+    const [brandName, getBrandName] = React.useState("");
+    const [origin, getOrigin] = React.useState("");
+    const [weight, getWeight] = React.useState("");
+    const [productLink, getProductLink] = React.useState("");
+    const [bestReview, getBestReview] = React.useState("");
+    const [worstReview, getWorstReview] = React.useState("");
+    const [bestValue, getBestValue] = React.useState(0);
+    const [worstValue, getWorstValue] = React.useState(0);
+    const [mainImg, getMainImg] = React.useState("./Image/mainImage.jpeg");
+    const [detailImg, gettDetailImg] = React.useState("./Image/detailImage.jpg");
+    const [detailImageHeight, getDetailImageHeight] = React.useState(0);
 
     const navigate = useNavigate();
 
     const productDetail = useRef(null);
     const openButton = useRef(null);
     const closedButton = useRef(null);
+    const detailImageSize = new Image();
+
+    useEffect( async () => {
+        const response  = await axios.post("/api/GetProductInfo");
+        const body = response.data;
+
+        getProductName(body.data[0]);
+        getProductPrice(body.data[1]);
+        getBrandName(body.data[2]);
+        getOrigin(body.data[3]);
+        getWeight(body.data[4]);
+        getProductLink(body.data[5]);
+        getBestReview(body.data[6]);
+        getWorstReview(body.data[7]);
+        getBestValue(body.data[8]);
+        getWorstValue(body.data[9]);
+
+        detailImageSize.src = detailImg;
+        getDetailImageHeight(detailImageSize.height);
+    },[]);
+    
 
     const openProductDetailImg = (e) => {
-        console.log("1");
-        productDetail.current.style.height = "2000px";
+        console.log(detailImageHeight);
+        productDetail.current.style.height = detailImageHeight +"px";
         openButton.current.style.display = "none";
         closedButton.current.style.display = "inline-flex";
     }
@@ -166,11 +201,11 @@ export default function ProductPage(props) {
                 <h3 style={styles.product_type}>
                     [상품 분류]
                 </h3>
-                <img style={styles.image_photo_bix}></img>
+                <img style={styles.image_photo_bix} src='./Image/mainImage.jpeg'></img>
                 <div style={styles.product_titel_detail_content}>
                     <div>
                         <h3 style={styles.product_detail_title}>
-                            상품명
+                            {`${productName}`}
                         </h3>
                     </div>
                     <div>
@@ -179,23 +214,7 @@ export default function ProductPage(props) {
                                 가격
                             </dt>
                             <dd style={styles.product_detail_list}>
-                                10000 원
-                            </dd>
-                        </dl>
-                        <dl style={styles.product_list_box}>
-                            <dt style={styles.product_list}>
-                                원산지
-                            </dt>
-                            <dd style={styles.product_detail_list}>
-                                대한민국
-                            </dd>
-                        </dl>
-                        <dl style={styles.product_list_box}>
-                            <dt style={styles.product_list}>
-                                브랜드
-                            </dt>
-                            <dd style={styles.product_detail_list}>
-                                브랜드명
+                                {`${productPrice} 원`}
                             </dd>
                         </dl>
                         <dl style={styles.product_list_box}>
@@ -203,15 +222,31 @@ export default function ProductPage(props) {
                                 무게
                             </dt>
                             <dd style={styles.product_detail_list}>
-                                100kg
+                                {`${weight}`}
+                            </dd>
+                        </dl>
+                        <dl style={styles.product_list_box}>
+                            <dt style={styles.product_list}>
+                                브랜드
+                            </dt>
+                            <dd style={styles.product_detail_list}>
+                                {`${brandName}`}
+                            </dd>
+                        </dl>
+                        <dl style={styles.product_list_box}>
+                            <dt style={styles.product_list}>
+                                원산지
+                            </dt>
+                            <dd style={styles.product_detail_list}>
+                                {`${origin}`}
                             </dd>
                         </dl>
                         <dl style={styles.product_list_box}>
                             <dt style={styles.product_list}>
                                 링크
                             </dt>
-                            <a href="https://www.naver.com" target="_blank" style={styles.product_detail_list}>
-                                네이버
+                            <a href={productLink} target="_blank" style={styles.product_detail_list}>
+                                링크 바로가기
                             </a>
                         </dl>
                     </div>
@@ -227,9 +262,7 @@ export default function ProductPage(props) {
                         [상세내용]
                     </h3>
                     <div style={styles.content_detail_img_big_box}>
-                        <img ref={productDetail}
-                            style = {styles.content_detail_img}
-                        ></img>
+                        <img ref={productDetail} style = {styles.content_detail_img} src='./Image/detailImage.jpg'></img>
                     </div>
                     <div
                         style={styles.content_open_close_button_area}
@@ -243,11 +276,33 @@ export default function ProductPage(props) {
                         <div style={styles.review_big_box}>
                             <div style={styles.best_review_box}>
                                 <h3 style={styles.review_text}>best 리뷰</h3>
-                                <div style={styles.detail_review_sec}></div>
+                                <div style={styles.detail_review_sec}>
+                                    <div style={{ textAlign: "left", width: "150px", position: "relative", top: "70px" }}>
+                                        <Rating name="no-value" style={{ top:"5px", left: "-1px"}} value={bestValue}/>
+                                        <div style={{ display: "inline-block"}}>
+                                            {`${bestValue}점`}
+                                        </div>
+                                        <div style={{ marginTop: "20px"}}>
+                                            {`${bestReview}`}
+                                        </div>
+                                    </div>
+                                    <img style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px"}}></img>
+                                </div>
                             </div>
                             <div style={styles.worst_review_box}>
                                 <h3 style={styles.review_text}>worst리뷰</h3>
-                                <div style={styles.detail_review_sec}></div>
+                                <div style={styles.detail_review_sec}>
+                                    <div style={{ textAlign: "left", width: "150px", position: "relative", top: "70px" }}>
+                                        <Rating name="no-value" style={{ top:"5px", left: "-1px"}} value={worstValue}/>
+                                        <div style={{ display: "inline-block"}}>
+                                            {`${worstValue}점`}
+                                        </div>
+                                        <div style={{ marginTop: "20px"}}>
+                                            {`${worstReview}`}
+                                        </div>
+                                    </div>
+                                    <img style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px"}}></img>
+                                </div>
                             </div> 
                         </div>
                     </div>

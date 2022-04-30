@@ -23,7 +23,7 @@ public class ApiController {
 
     private static final String url = "jdbc:mariadb://127.0.0.1:3306/projectdb";
     private static final String user = "root";
-    private static final String password = "123456";
+    private static final String password = "-1q2w3e4rfv";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -89,7 +89,19 @@ public class ApiController {
 
             Statement stmt = conn.createStatement();
 
-            String sql = "INSERT INTO product (productName, productPrice) VALUES (\"" + requestData.get("dbProductName") +"\","+ requestData.get("dbProductPrice")  + ")";
+            String pdcNumber = null;
+
+            String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM product";
+
+            rs = stmt.executeQuery(pdc);
+
+            while( rs.next() ) {
+                pdcNumber = "PDC-" + rs.getString("LPAD(COUNT(*)+1,5,'0')");
+            }
+
+            String sql = "INSERT INTO product (PDC_number, productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating ) VALUES (\"" + pdcNumber + "\",\"" + requestData.get("productName") +"\","+ requestData.get("productPrice") + ",\""+ requestData.get("brandName")+ "\",\"" + requestData.get("origin") + "\",\"" + requestData.get("weight") + "\",\""+ requestData.get("productLink") +"\",\""+ requestData.get("bestReview")+ "\",\""+ requestData.get("worstReview") +"\","+ requestData.get("bestValue") +","+ requestData.get("worstValue") + ")";
+
+            System.out.println(sql);
 
             rs = stmt.executeQuery(sql);
         } catch (Exception e) {};
@@ -162,5 +174,50 @@ public class ApiController {
         return "{\"result\": \"OK\"}";
     }
 
+    @RequestMapping(value = "/api/GetProductInfo", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public Map<String, Object> GetProductInfo() {
+        List result = new ArrayList();
+        ResultSet rs = null;
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating FROM product";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ) {
+                String productName = rs.getString(1);
+                String productPrice = rs.getString(2);
+                String brandName = rs.getString(3);
+                String origin = rs.getString(4);
+                String productWeight = rs.getString(5);
+                String productLink = rs.getString(6);
+                String bestReviewText = rs.getString(7);
+                String worstReviewText = rs.getString(8);
+                String bestRating = rs.getString(9);
+                String worstRating = rs.getString(10);
+
+                result.add(productName);
+                result.add(productPrice);
+                result.add(brandName);
+                result.add(origin);
+                result.add(productWeight);
+                result.add(productLink);
+                result.add(bestReviewText);
+                result.add(worstReviewText);
+                result.add(bestRating);
+                result.add(worstRating);
+            }
+            response.put("data", result);
+
+        } catch ( Exception e ) {};
+
+        return response;
+    }
 
 }

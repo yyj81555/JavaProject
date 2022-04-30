@@ -32,6 +32,7 @@ export default function App(props) {
     }
   }
   const [showCategory, setShowCategory] = React.useState(false);
+
   // useEffect(() => {}, []);
 
   const TopBar = () => {
