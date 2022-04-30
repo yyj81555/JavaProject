@@ -121,8 +121,10 @@ public class ApiController {
 
             String encodedPassword = passwordEncoder.encode(body.get("userPassword"));
 
-            String sql = "INSERT INTO account (UserID, UserPassword, Name) VALUE (\"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
-                    "\"" + body.get("name") + "\")";
+
+            String sql = "INSERT INTO account (Level, UserID, UserPassword, Name, cellphoneNumber) VALUE (1, \"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
+                    "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\")";
+
 
 
             rs = stmt.executeQuery(sql);
