@@ -102,13 +102,31 @@ public class ApiController {
                 pdcNumber = "PDC-" + rs.getString("LPAD(COUNT(*)+1,5,'0')");
             }
 
-            String sql = "INSERT INTO product (PDC_number, productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating ) VALUES (\"" + pdcNumber + "\",\"" + requestData.get("productName") +"\","+ requestData.get("productPrice") + ",\""+ requestData.get("brandName")+ "\",\"" + requestData.get("origin") + "\",\"" + requestData.get("weight") + "\",\""+ requestData.get("productLink") +"\",\""+ requestData.get("bestReview")+ "\",\""+ requestData.get("worstReview") +"\","+ requestData.get("bestValue") +","+ requestData.get("worstValue") + ")";
+            String sql = "INSERT INTO product (PDC_number, productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating, kind, productType ) VALUES (\""
+                    + pdcNumber + "\",\"" + requestData.get("productName") +"\","+ requestData.get("productPrice") + ",\""+ requestData.get("brandName")+ "\",\"" + requestData.get("origin") + "\",\""
+                    + requestData.get("weight") + "\",\""+ requestData.get("productLink") +"\",\""+ requestData.get("bestReview")+ "\",\""
+                    + requestData.get("worstReview") +"\","+ requestData.get("bestValue") +"," + requestData.get("worstValue") + ",\""
+                    + requestData.get("animalKind") + "\",\"" + requestData.get("productType") + "\"" + ")";
 
             System.out.println(sql);
 
             rs = stmt.executeQuery(sql);
         } catch (Exception e) {};
 
+        return "{\"result\": \"OK\"}";
+    }
+
+    @RequestMapping(value = "/api/ProductImageInfo", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String ProductInfo(@RequestParam("file") MultipartFile multipartFile) {
+        File targetFile = new File("../client/public/Image/Product/" + multipartFile.getOriginalFilename());
+        try {
+            InputStream fileStream = multipartFile.getInputStream();
+            FileUtils.copyInputStreamToFile(fileStream, targetFile);
+        } catch (IOException e) {
+            FileUtils.deleteQuietly(targetFile);
+            e.printStackTrace();
+        }
         return "{\"result\": \"OK\"}";
     }
 
@@ -125,8 +143,16 @@ public class ApiController {
             String encodedPassword = passwordEncoder.encode(body.get("userPassword"));
 
 
-            String sql = "INSERT INTO account (Level, UserID, UserPassword, Name, cellphoneNumber) VALUE (1, \"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
-                    "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\")";
+            String sql = "INSERT INTO account";
+
+            if (body.get("level") == "1") {
+                sql += "(Level, UserID, UserPassword, Name, cellphoneNumber) VALUE (\"" + body.get("level") + "\",\"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
+                        "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\")";
+            } else if (body.get("level") == "2") {
+                sql += "(Level, UserID, UserPassword, Name, cellphoneNumber,cellphoneNumber,) VALUE (\"" + body.get("level") + "\", \"" + body.get("userID") + "\",\""
+                        + encodedPassword + "\"," + "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\",\"" + body.get("companyName") + "\",\""
+                        + body.get("businessName") + "\",\"" + body.get("companyNumber") + "\")";
+            }
 
 
             rs = stmt.executeQuery(sql);
@@ -224,13 +250,17 @@ public class ApiController {
         return response;
     }
 
-    @RequestMapping(value = "/api/SaveImage", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/SaveProductImage", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public String SaveImage(@RequestParam("file") MultipartFile multipartFile) {
+    public String SaveProductImage(@RequestParam("file") MultipartFile multipartFile) {
         File targetFile = new File("../client/public/Image/Product/" + multipartFile.getOriginalFilename());
+
+        System.out.println(targetFile);
         try {
             InputStream fileStream = multipartFile.getInputStream();
             FileUtils.copyInputStreamToFile(fileStream, targetFile);
+
+
         } catch (IOException e) {
             FileUtils.deleteQuietly(targetFile);
             e.printStackTrace();

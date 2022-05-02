@@ -10,6 +10,15 @@ import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import ListSubheader from '@mui/material/ListSubheader';
 
 export default function AddProductPage(props) {
     const styles = {
@@ -18,8 +27,9 @@ export default function AddProductPage(props) {
             margin: "auto",
             marginTop: "100px",
             width: "1200px",
-            height: "1140px",
+            height: "1500px",
             textAlign: "left",
+            overfloewY: "auto"
         },
         hide_input : {
             display: "none"
@@ -140,7 +150,7 @@ export default function AddProductPage(props) {
             marginTop: "-20px"
         },
         submit_button : {
-            top: "150px",
+            top: "380px",
             left: "980px"
         }
     };
@@ -159,6 +169,11 @@ export default function AddProductPage(props) {
     const [worstReviewImg, inputWorstReviewImg] = React.useState("./Image/InputImageDefault.png");
     const [bestValue, bestSetValue] = React.useState(0);
     const [worstValue, worstSetValue] = React.useState(0);
+    const [kind, inputKind] = React.useState("dog");
+    const [type, inputType] = React.useState("");
+    const [mainImageForm, getMainImageForm] = React.useState();
+    const [detailImageForm, getDetailImageForm] = React.useState();
+    
 
     const mainImgInput = useRef(null);
     const detailImgInput = useRef(null);
@@ -175,11 +190,22 @@ export default function AddProductPage(props) {
     const mainImgBox = useRef(null);
     const detailImgBox =useRef(null);
 
+    const mainImageFormData = new FormData();
+    const detailImageFormData = new FormData();
+
     const navigate = useNavigate();
 
     React.useEffect(() => {
         // init
     }, []);
+
+    const onChangeInputKind = (e) => {
+        inputKind(e.target.value);
+    }
+
+    const onChangeProductType =(e) => {
+        inputType(e.target.value);
+    }
 
     const onClickMainImgUpload = (e) => {
         mainImgInput.current.click();
@@ -201,7 +227,9 @@ export default function AddProductPage(props) {
         const file = mainImgInput.current.files[0];
         const imageUrl = URL.createObjectURL(file);
 
+        getMainImageForm(file);
         inputMainImg(imageUrl);
+        mainImageFormData.append("file", mainImg);
         
         mainImgUploadButton.current.style.display = "none";
         mainImgDeleteButton.current.style.display = "inline-flex";
@@ -218,7 +246,9 @@ export default function AddProductPage(props) {
         const file = detailImgInput.current.files[0];
         const imageUrl = URL.createObjectURL(file);
 
+        getDetailImageForm(file);
         inputDetailImg(imageUrl);
+        detailImageFormData.append("file", detailImg);
 
         detailImgUploadButton.current.style.display = "none";
         detailImgDeleteButton.current.style.display = "inline-flex";
@@ -317,8 +347,19 @@ export default function AddProductPage(props) {
             worstReview: worstReview,
             weight: weight,
             productLink: productLink,
+            animalKind: kind,
+            productType: type,
             contentType: "application/json; UTF-8;",
         })
+        mainImageFormData.append('file', mainImageForm);
+        detailImageFormData.append('file', detailImageForm);
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+        await axios.post("/api/SaveProductImage", mainImageFormData, config)
+        await axios.post("/api/SaveProductImage", detailImageFormData, config)
         .then(res => {
             navigate("/");
         })
@@ -332,6 +373,53 @@ export default function AddProductPage(props) {
             <h3 style={styles.add_product_text}>[상품 추가]</h3>
             <form method="post" onSubmit={submitHander}>
                 <div style={styles.add_proudct_sec}>
+                    <div style={{width: "1000px", height: "150px"  }}>
+                        <div style={{ width: "150px", height: "150px", display: "inline-block", position: "relative", top: "0px", borderBottom: "1px solid #5e6c81", lineHeight: "150px", textAlign: "center", backgroundColor: "#f0f7ff", color: "#233756",}}>
+                            동물 종류
+                        </div>
+                        <div style={{width:"350px",display: "inline-block", position: "relative", top: "-24px", left: "0px", borderBottom: "1px solid #5e6c81"}}>
+                            <RadioGroup
+                                aria-labelledby="demo-radio-buttons-group-label"
+                                defaultValue="dog"
+                                name="radio-buttons-group"
+                                style={{ marginLeft: "20px"}}
+                            >
+                                <FormControlLabel value="dog" onChange={(e)=> onChangeInputKind(e)} control={<Radio />} label="강아지" />
+                                <FormControlLabel value="cat" onChange={(e)=> onChangeInputKind(e)} control={<Radio />} label="고양이" />
+                                <FormControlLabel value="other" onChange={(e)=> onChangeInputKind(e)} control={<Radio />} label="기타" />
+                            </RadioGroup>
+                        </div>
+                        <div style={{ width: "150px", height: "150px", display: "inline-block", position: "relative", borderBottom: "1px solid #5e6c81", lineHeight: "150px", textAlign: "center", backgroundColor: "#f0f7ff", color: "#233756", }}>
+                            물건 종류
+                        </div>
+                        <div style={{width:"350px",height: "150px",display: "inline-block", position: "relative", top: "-64px", left: "0px", borderBottom: "1px solid #5e6c81"}}>
+                            <FormControl sx={{ m: 1, minWidth: 120, marginTop: "50px" }}>
+                                <InputLabel htmlFor="grouped-select">카테고리</InputLabel>
+                                <Select defaultValue="" id="grouped-select" label="카테고리 선택" onChange={(e) => onChangeProductType(e)}>
+                                    <ListSubheader value="feedType" style={{ fontWeight: "bold", color: "black"}}>사료</ListSubheader>
+                                    <MenuItem value="dryFeed">건식사료</MenuItem>
+                                    <MenuItem value="wetFeed">습식사료</MenuItem>
+                                    <MenuItem value="canFeed">통조림</MenuItem>
+                                    <MenuItem value="otherFeed">기타</MenuItem>
+                                    <ListSubheader value="snackType" style={{ fontWeight: "bold", color: "black"}}>간식</ListSubheader>
+                                    <MenuItem value="boonSnack">뼈 간식</MenuItem>
+                                    <MenuItem value="wetSnack">습식 간식</MenuItem>
+                                    <MenuItem value="meatSnack">고기 간식</MenuItem>
+                                    <MenuItem value="otherSnack">기타</MenuItem>
+                                    <ListSubheader value="snackType" style={{ fontWeight: "bold", color: "black"}}>옷</ListSubheader>
+                                    <MenuItem value="tshirt">티셔츠</MenuItem>
+                                    <MenuItem value="hood">후드</MenuItem>
+                                    <MenuItem value="manToMan">맨투맨</MenuItem>
+                                    <MenuItem value="onePiece">원피스</MenuItem>
+                                    <MenuItem value="otherClothes">기타</MenuItem>
+                                    <ListSubheader value="dogWalkingSuppliesType" style={{ fontWeight: "bold", color: "black"}}>산책 용품</ListSubheader>
+                                    <MenuItem value="leadRope">리드줄</MenuItem>
+                                    <MenuItem value="defecationPouch">똥츄</MenuItem>
+                                    <MenuItem value="otherDogWalkSupplies">기타</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
                     <div style={styles.first_table_sec}>
                         <div style={styles.first_explanation_sec}>상품명</div>
                         <div style={styles.input_textfield_sec}>

@@ -9,6 +9,7 @@ import { Button } from '@mui/material';
 import { Dehaze } from '@mui/icons-material';
 
 import AddProductPage from './Component/AddProductPage';
+import MainPage from './Component/MainPage';
 import LoginPage from './Component/LoginPage';
 import SignUpPage from './Component/SignUpPage';
 import MyPage from './Component/MyPage';
@@ -41,6 +42,11 @@ export default function App(props) {
         <Link to={"/AddProduct"}>
           <Button>
             추가
+          </Button>
+        </Link>
+        <Link to={"/MainPage"}>
+          <Button>
+            메인페이지
           </Button>
         </Link>
         <Link to={"/MyPage"}>
@@ -244,9 +250,9 @@ export default function App(props) {
 
         <input type="file" file={file} onChange={(e) => {setFile(e.target.files[0]);}}/>
         <Button placeholder='파일추가' onClick={() => saveImage()}>파일 추가</Button>
-
         <Routes>
           <Route exact path="/AddProduct" element={ <AddProductPage/>}/>
+          <Route exact path="/MainPage" element={ <MainPage/>}/>
           <Route exact path="/MyPage" element={ <MyPage/> }/>
           <Route exact path="/Login" element={ <LoginPage/> }/>
           <Route exact path="/SignUp" element={ <SignUpPage/> }/>

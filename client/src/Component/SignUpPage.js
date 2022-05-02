@@ -18,7 +18,7 @@ export default function SignUpPage(props) {
     const [userPasswordConfirm, setUserPasswordConfirm] = React.useState("");
     const [msg, setMSG] = React.useState("");
     const [isUserPasswordSame,setIsUserPasswordSame] = React.useState(false);
-    const [value, setValue] = React.useState('1');
+    const [value, setValue] = React.useState("1");
     const [cellphoneNumber,setCellphoneNumber] = React.useState("");
     const [companyName,setCompanyName] = React.useState("");
     const [businessName,setBusinessName] = React.useState("");
@@ -50,8 +50,8 @@ export default function SignUpPage(props) {
 
     const OnClickSignUp = async () => {
     let formData = null;
-
-    if(value === 1) {
+    
+    if(value === "1") {
         formData = {
             level: value,
 	        userID: userID,
@@ -61,7 +61,7 @@ export default function SignUpPage(props) {
             contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
         }
     }
-    else if (value === 2) {
+    else if (value === "2") {
         formData = {
 	        level: value,
             userID: userID,
@@ -76,6 +76,8 @@ export default function SignUpPage(props) {
     }
 
     const response = await axios.post("/api/createUser", formData);
+
+    console.log(1);
     const body = response.data;
 
     setMSG(body.result);
