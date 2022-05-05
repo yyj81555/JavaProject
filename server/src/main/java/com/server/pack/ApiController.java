@@ -1,5 +1,6 @@
 package com.server.pack;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -82,54 +85,6 @@ public class ApiController {
         return "{\"result\": \"OK\"}";
     }
 
-    @RequestMapping(value = "/api/ProductInfo", method = RequestMethod.POST) //value 는 요청받을 url , method 는 어떤요청으로 받을지 정의 ex) get post
-    @ResponseStatus(value = HttpStatus.OK)
-    public String ImportProductInfo(@RequestBody Map<String, Object> requestData) {
-        ResultSet rs = null;
-        try {
-            Class.forName(DBDriver);
-            Connection conn = DriverManager.getConnection(url, user, password);
-
-            Statement stmt = conn.createStatement();
-
-            String pdcNumber = null;
-
-            String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM product";
-
-            rs = stmt.executeQuery(pdc);
-
-            while( rs.next() ) {
-                pdcNumber = "PDC-" + rs.getString("LPAD(COUNT(*)+1,5,'0')");
-            }
-
-            String sql = "INSERT INTO product (PDC_number, productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating, kind, productType ) VALUES (\""
-                    + pdcNumber + "\",\"" + requestData.get("productName") +"\","+ requestData.get("productPrice") + ",\""+ requestData.get("brandName")+ "\",\"" + requestData.get("origin") + "\",\""
-                    + requestData.get("weight") + "\",\""+ requestData.get("productLink") +"\",\""+ requestData.get("bestReview")+ "\",\""
-                    + requestData.get("worstReview") +"\","+ requestData.get("bestValue") +"," + requestData.get("worstValue") + ",\""
-                    + requestData.get("animalKind") + "\",\"" + requestData.get("productType") + "\"" + ")";
-
-            System.out.println(sql);
-
-            rs = stmt.executeQuery(sql);
-        } catch (Exception e) {};
-
-        return "{\"result\": \"OK\"}";
-    }
-
-    @RequestMapping(value = "/api/ProductImageInfo", method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
-    public String ProductInfo(@RequestParam("file") MultipartFile multipartFile) {
-        File targetFile = new File("../client/public/Image/Product/" + multipartFile.getOriginalFilename());
-        try {
-            InputStream fileStream = multipartFile.getInputStream();
-            FileUtils.copyInputStreamToFile(fileStream, targetFile);
-        } catch (IOException e) {
-            FileUtils.deleteQuietly(targetFile);
-            e.printStackTrace();
-        }
-        return "{\"result\": \"OK\"}";
-    }
-
     @RequestMapping(value = "/api/createUser", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public String CreateUser(@RequestBody Map<String, String> body) {
@@ -145,17 +100,26 @@ public class ApiController {
 
             String sql = "INSERT INTO account";
 
-            if (body.get("level") == "1") {
-                sql += "(Level, UserID, UserPassword, Name, cellphoneNumber) VALUE (\"" + body.get("level") + "\",\"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
+            int test = Integer.parseInt(body.get("level"));
+
+            boolean test1 = (test == 1);
+
+            System.out.println(test1);
+
+            if (Integer.parseInt(body.get("level")) == 1) {
+                sql += " (level, userID, userPassword, name, cellphoneNumber ) VALUE (\"" + body.get("level") + "\",\"" + body.get("userID") + "\",\"" + body.get("userPassword") + "\"," +
                         "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\")";
-            } else if (body.get("level") == "2") {
-                sql += "(Level, UserID, UserPassword, Name, cellphoneNumber,cellphoneNumber,) VALUE (\"" + body.get("level") + "\", \"" + body.get("userID") + "\",\""
+            } else if (Integer.parseInt(body.get("level")) == 2) {
+                sql += " (Level, UserID, UserPassword, Name, cellphoneNumber,cellphoneNumber,) VALUE (\"" + body.get("level") + "\", \"" + body.get("userID") + "\",\""
                         + encodedPassword + "\"," + "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\",\"" + body.get("companyName") + "\",\""
                         + body.get("businessName") + "\",\"" + body.get("companyNumber") + "\")";
             }
 
+            System.out.println(sql);
 
             rs = stmt.executeQuery(sql);
+
+            System.out.println(rs);
         } catch (Exception e) {};
 
         return "{\"result\": \"OK\"}";
@@ -250,21 +214,85 @@ public class ApiController {
         return response;
     }
 
-    @RequestMapping(value = "/api/SaveProductImage", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/ProductInfo", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public String SaveProductImage(@RequestParam("file") MultipartFile multipartFile) {
-        File targetFile = new File("../client/public/Image/Product/" + multipartFile.getOriginalFilename());
+    public String ProductInfo( @RequestParam("mainImageFile") MultipartFile mainImageFile,
+                                        @RequestParam("detailImageFile") MultipartFile detailImageFile,
+                                        @RequestParam("bestReviewImageFile") MultipartFile bestReviewImageFile,
+                                        @RequestParam("worstReviewImageFile") MultipartFile worstReviewImageFile,
+                                        @RequestParam String productName,
+                                        @RequestParam String productPrice,
+                                        @RequestParam String brandName,
+                                        @RequestParam String origin,
+                                        @RequestParam String bestValue,
+                                        @RequestParam String worstValue,
+                                        @RequestParam String bestReview,
+                                        @RequestParam String worstReview,
+                                        @RequestParam String weight,
+                                        @RequestParam String productLink,
+                                        @RequestParam String kind,
+                                        @RequestParam String type) {
 
-        System.out.println(targetFile);
+        File mainImageTargetFile = new File("../client/public/Image/Product/Main/" + mainImageFile.getOriginalFilename());
+        File detailImageTargetFile = new File("../client/public/Image/Product/Detail/" + detailImageFile.getOriginalFilename());
+        File bestReviewImageTargetFile = new File("../client/public/Image/Product/BestReview/" + bestReviewImageFile.getOriginalFilename());
+        File worstReviewImageTargetFile = new File("../client/public/Image/Product/WorstReview/" + worstReviewImageFile.getOriginalFilename());
+
+        ResultSet rs = null;
+
         try {
-            InputStream fileStream = multipartFile.getInputStream();
-            FileUtils.copyInputStreamToFile(fileStream, targetFile);
+            InputStream mainImageFileStream = mainImageFile.getInputStream();
+            FileUtils.copyInputStreamToFile(mainImageFileStream, mainImageTargetFile);
+
+            InputStream detailImageFileStream = mainImageFile.getInputStream();
+            FileUtils.copyInputStreamToFile(detailImageFileStream, detailImageTargetFile);
+
+            InputStream bestReviewImageFileStream = mainImageFile.getInputStream();
+            FileUtils.copyInputStreamToFile(bestReviewImageFileStream, bestReviewImageTargetFile);
+
+            InputStream worstReviewImageFileStream = mainImageFile.getInputStream();
+            FileUtils.copyInputStreamToFile(worstReviewImageFileStream, worstReviewImageTargetFile);
+
+            try {
+                Class.forName(DBDriver);
+                Connection conn = DriverManager.getConnection(url, user, password);
+                Statement stmt = conn.createStatement();
+
+                String pdcNumber = null;
+
+                String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM product";   // 문자열
+
+                rs = stmt.executeQuery(pdc);
+
+                while( rs.next() ) {
+                    pdcNumber = "PDC-" + rs.getString("LPAD(COUNT(*)+1,5,'0')");
+                }
+
+                String sql = "INSERT INTO product (PDC_number, productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating, kind, productType, mainImageRoute, detailImageRoute, bestImageRoute, worstImageRoute ) VALUES (\""
+                        + pdcNumber + "\",\"" + productName +"\","+ productPrice + ",\""+ brandName + "\",\"" + origin + "\",\""
+                        + weight + "\",\""+ productLink +"\",\""+ bestReview + "\",\""
+                        + worstReview +"\","+ bestValue +"," + worstValue + ",\""
+                        + kind + "\",\"" + type + "\",\"" + mainImageTargetFile + "\",\"" + detailImageTargetFile + "\",\"" + bestReviewImageTargetFile + "\",\"" + worstReviewImageTargetFile + "\")";
+
+                rs = stmt.executeQuery(sql);
+
+            } catch ( Exception e ) {} ;
 
 
         } catch (IOException e) {
-            FileUtils.deleteQuietly(targetFile);
+            FileUtils.deleteQuietly(mainImageTargetFile);
+            e.printStackTrace();
+
+            FileUtils.deleteQuietly(detailImageTargetFile);
+            e.printStackTrace();
+
+            FileUtils.deleteQuietly(bestReviewImageTargetFile);
+            e.printStackTrace();
+
+            FileUtils.deleteQuietly(worstReviewImageTargetFile);
             e.printStackTrace();
         }
         return "{\"result\": \"OK\"}";
     }
+
 }

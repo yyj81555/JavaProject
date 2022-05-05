@@ -173,7 +173,8 @@ export default function AddProductPage(props) {
     const [type, inputType] = React.useState("");
     const [mainImageForm, getMainImageForm] = React.useState();
     const [detailImageForm, getDetailImageForm] = React.useState();
-    
+    const [bestReviewImageForm, getbestReviewImageForm] = React.useState();
+    const [worstReviewImageForm, getworstReviewImageForm] = React.useState();
 
     const mainImgInput = useRef(null);
     const detailImgInput = useRef(null);
@@ -191,7 +192,6 @@ export default function AddProductPage(props) {
     const detailImgBox =useRef(null);
 
     const mainImageFormData = new FormData();
-    const detailImageFormData = new FormData();
 
     const navigate = useNavigate();
 
@@ -229,7 +229,6 @@ export default function AddProductPage(props) {
 
         getMainImageForm(file);
         inputMainImg(imageUrl);
-        mainImageFormData.append("file", mainImg);
         
         mainImgUploadButton.current.style.display = "none";
         mainImgDeleteButton.current.style.display = "inline-flex";
@@ -248,8 +247,7 @@ export default function AddProductPage(props) {
 
         getDetailImageForm(file);
         inputDetailImg(imageUrl);
-        detailImageFormData.append("file", detailImg);
-
+    
         detailImgUploadButton.current.style.display = "none";
         detailImgDeleteButton.current.style.display = "inline-flex";
     }
@@ -265,6 +263,7 @@ export default function AddProductPage(props) {
         const file = bestReviewImgInput.current.files[0];
         const imageUrl = URL.createObjectURL(file);
 
+        getbestReviewImageForm(file);
         inputBestReviewImg(imageUrl);
 
         bestReviewImgUploadButton.current.style.display = "none";
@@ -281,7 +280,8 @@ export default function AddProductPage(props) {
     const onChangeWorstReviewImage = () => {
         const file = worstReivewImgInput.current.files[0];
         const imageUrl = URL.createObjectURL(file);
-
+        
+        getworstReviewImageForm(file);
         inputWorstReviewImg(imageUrl);
 
         worstReviewImgUploadButton.current.style.display = "none";
@@ -298,8 +298,6 @@ export default function AddProductPage(props) {
     const onChangeProductName = (e) => {
         inputProductName(e.target.value);
         const productNameLength = e.target.value.length;
-
-        console.log(e.target.value);
 
         if (productNameLength > 20) {
             alert("글자 수는 20자를 넘어가면 안됩니다.");
@@ -329,37 +327,39 @@ export default function AddProductPage(props) {
     const onChangeWeight = (e) => {
         inputWeight(e.target.value);
     }
-    
     const onChangeLink = (e) => {
         inputProductLink(e.target.value);
     }
 
     const submitHander = async (e) => {
         e.preventDefault();
-        await axios.post("/api/ProductInfo", {
-            productName: productName,
-            productPrice: productPrice,
-            brandName: brandName,
-            origin: origin,
-            bestValue: bestValue,
-            worstValue: worstValue,
-            bestReview: bestReview,
-            worstReview: worstReview,
-            weight: weight,
-            productLink: productLink,
-            animalKind: kind,
-            productType: type,
-            contentType: "application/json; UTF-8;",
-        })
-        mainImageFormData.append('file', mainImageForm);
-        detailImageFormData.append('file', detailImageForm);
+        
+        const postBestValue = String(bestValue);
+        const postWorstValue = String(worstValue);
+        
+        mainImageFormData.append('mainImageFile', mainImageForm);
+        mainImageFormData.append('detailImageFile', detailImageForm);
+        mainImageFormData.append('bestReviewImageFile', bestReviewImageForm);
+        mainImageFormData.append('worstReviewImageFile', worstReviewImageForm);
+        mainImageFormData.append('productName', productName);
+        mainImageFormData.append('productPrice', productPrice);
+        mainImageFormData.append('brandName', brandName);
+        mainImageFormData.append('origin', origin);
+        mainImageFormData.append('bestValue', postBestValue);
+        mainImageFormData.append('worstValue', postWorstValue);
+        mainImageFormData.append('bestReview', bestReview);
+        mainImageFormData.append('worstReview', worstReview);
+        mainImageFormData.append('weight', weight);
+        mainImageFormData.append('productLink', productLink);
+        mainImageFormData.append('kind', kind);
+        mainImageFormData.append('type', type);
+
         const config = {
             headers: {
                 'content-type': 'multipart/form-data'
             }
         }
-        await axios.post("/api/SaveProductImage", mainImageFormData, config)
-        await axios.post("/api/SaveProductImage", detailImageFormData, config)
+        await axios.post("/api/ProductInfo", mainImageFormData, config)
         .then(res => {
             navigate("/");
         })
@@ -494,7 +494,7 @@ export default function AddProductPage(props) {
                             <Button variant="contained" ref={worstReviewImgDeleteButton} onClick={() => onClickWorstReviewImgDelete()} style={styles.review_image_delete_button}> X </Button>
                             <TextField
                             id="standard-multiline-static"
-                            label="best리뷰"
+                            label="worst리뷰"
                             multiline
                             rows={5}
                             defaultValue="리뷰를 입력해주세요."
