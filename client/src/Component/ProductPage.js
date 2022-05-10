@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from "axios";
-import { useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
+
+import { Button } from '@mui/material';
 import Rating from '@mui/material/Rating';
-import { Button, Hidden } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 export default function ProductPage(props) {
     const styles = {
@@ -94,13 +95,14 @@ export default function ProductPage(props) {
             width: "1200px",
             height: "auto",
             textAlign: "center",
-            paddingTop: "50px"
+            paddingTop: "50px",
+            overflow: "hidden"
         },
         content_detail_img : {
             border: "1px solid orange",
-            width: "860px",
+            width: "100%",
             height: "600px",
-            overflowY: "hidden"
+            objectFit : "none"
         },
         content_open_close_button_area : {
             margin: "auto",
@@ -110,7 +112,7 @@ export default function ProductPage(props) {
         },
         review_big_box : {
             border: "1px solid black",
-            height: "300px"
+            height: "500px"
         },
         best_review_box : {
             display: "inline-block",
@@ -124,6 +126,7 @@ export default function ProductPage(props) {
             border: "1px solid red",
             width: "400px",
             height: "300px",
+            
         },
         review_text : {
             border: "1px solid black"
@@ -145,19 +148,25 @@ export default function ProductPage(props) {
     const [worstReview, getWorstReview] = React.useState("");
     const [bestValue, getBestValue] = React.useState(0);
     const [worstValue, getWorstValue] = React.useState(0);
-    const [mainImg, getMainImg] = React.useState("./Image/mainImage.jpeg");
-    const [detailImg, gettDetailImg] = React.useState("./Image/detailImage.jpg");
+    const [mainImg, getMainImg] = React.useState("");
+    const [detailImg, getDetailImg] = React.useState("");
     const [detailImageHeight, getDetailImageHeight] = React.useState(0);
+    const [mainImageSrc, setMainImageSrc] = React.useState("");
+    const [detailImageSrc, setDetailImageSrc] = React.useState("");
 
     const navigate = useNavigate();
 
+    const productMainIamge = useRef(null);
     const productDetail = useRef(null);
     const openButton = useRef(null);
     const closedButton = useRef(null);
     const detailImageSize = new Image();
 
+    const PdcNumber = window.sessionStorage.getItem("productID");
+
+
     useEffect( async () => {
-        const response  = await axios.post("/api/GetProductInfo");
+        const response  = await axios.post("/api/GetProductInfo", { PdcNumber : PdcNumber });
         const body = response.data;
 
         getProductName(body.data[0]);
@@ -170,10 +179,24 @@ export default function ProductPage(props) {
         getWorstReview(body.data[7]);
         getBestValue(body.data[8]);
         getWorstValue(body.data[9]);
+        getMainImg(body.data[10]);
+        getDetailImg(body.data[11]);
 
-        detailImageSize.src = detailImg;
-        getDetailImageHeight(detailImageSize.height);
     },[]);
+
+    useEffect ( () => {
+        setMainImageSrc(mainImg.replace("../client/public", "."));
+        productMainIamge.current.src = mainImageSrc;
+        
+
+        setDetailImageSrc(detailImg.replace("../client/public", "."));
+        productDetail.current.src = detailImageSrc;
+
+        setTimeout(() => {
+            detailImageSize.src = detailImageSrc;
+            getDetailImageHeight(detailImageSize.height);
+        },10)
+    })
     
 
     const openProductDetailImg = (e) => {
@@ -201,7 +224,7 @@ export default function ProductPage(props) {
                 <h3 style={styles.product_type}>
                     [상품 분류]
                 </h3>
-                <img style={styles.image_photo_bix} src='./Image/mainImage.jpeg'></img>
+                <img style={styles.image_photo_bix} ref={productMainIamge}></img>
                 <div style={styles.product_titel_detail_content}>
                     <div>
                         <h3 style={styles.product_detail_title}>
@@ -262,7 +285,7 @@ export default function ProductPage(props) {
                         [상세내용]
                     </h3>
                     <div style={styles.content_detail_img_big_box}>
-                        <img ref={productDetail} style = {styles.content_detail_img} src='./Image/detailImage.jpg'></img>
+                        <img ref={productDetail} style = {styles.content_detail_img}></img>
                     </div>
                     <div
                         style={styles.content_open_close_button_area}
@@ -277,8 +300,8 @@ export default function ProductPage(props) {
                             <div style={styles.best_review_box}>
                                 <h3 style={styles.review_text}>best 리뷰</h3>
                                 <div style={styles.detail_review_sec}>
-                                    <div style={{ textAlign: "left", width: "150px", position: "relative", top: "70px" }}>
-                                        <Rating name="no-value" style={{ top:"5px", left: "-1px"}} value={bestValue}/>
+                                    <div style={{ textAlign: "left", width: "150px", position: "relative", top: "70px", width: "200px", height: "150px" }}>
+                                        <Rating name="read-only" style={{ top:"5px", left: "-1px"}} value={bestValue} readOnly/>
                                         <div style={{ display: "inline-block"}}>
                                             {`${bestValue}점`}
                                         </div>
@@ -286,22 +309,22 @@ export default function ProductPage(props) {
                                             {`${bestReview}`}
                                         </div>
                                     </div>
-                                    <img style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px"}}></img>
+                                    <img style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px", position: "relative", top: "-60px"}}></img>
                                 </div>
                             </div>
                             <div style={styles.worst_review_box}>
                                 <h3 style={styles.review_text}>worst리뷰</h3>
                                 <div style={styles.detail_review_sec}>
-                                    <div style={{ textAlign: "left", width: "150px", position: "relative", top: "70px" }}>
-                                        <Rating name="no-value" style={{ top:"5px", left: "-1px"}} value={worstValue}/>
+                                    <div style={{ textAlign: "left", width: "150px", position: "relative", top: "70px", width: "200px", height: "150px" }}>
+                                        <Rating name="read-only" style={{ top:"5px", left: "-1px"}} value={worstValue} readOnly/>
                                         <div style={{ display: "inline-block"}}>
                                             {`${worstValue}점`}
                                         </div>
-                                        <div style={{ marginTop: "20px"}}>
+                                        <div style={{ marginTop: "20px",}}>
                                             {`${worstReview}`}
                                         </div>
                                     </div>
-                                    <img style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px"}}></img>
+                                    <img style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px", position: "relative", top: "-60px" }}></img>
                                 </div>
                             </div> 
                         </div>

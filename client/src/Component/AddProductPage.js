@@ -19,6 +19,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import ListSubheader from '@mui/material/ListSubheader';
+import { categoryEnum } from './const';
 
 export default function AddProductPage(props) {
     const styles = {
@@ -299,8 +300,8 @@ export default function AddProductPage(props) {
         inputProductName(e.target.value);
         const productNameLength = e.target.value.length;
 
-        if (productNameLength > 20) {
-            alert("글자 수는 20자를 넘어가면 안됩니다.");
+        if (productNameLength > 50) {
+            alert("글자 수는 50자를 넘어가면 안됩니다.");
         }
     }
 
@@ -352,7 +353,13 @@ export default function AddProductPage(props) {
         mainImageFormData.append('weight', weight);
         mainImageFormData.append('productLink', productLink);
         mainImageFormData.append('kind', kind);
-        mainImageFormData.append('type', type);
+        
+        if (type < 10) {
+            mainImageFormData.append('type', categoryEnum.FOOD+","+type);
+        }
+        else if(type>10) {
+            mainImageFormData.append('type', categoryEnum.SNACKS+","+type);
+        }
 
         const config = {
             headers: {
@@ -397,15 +404,16 @@ export default function AddProductPage(props) {
                                 <InputLabel htmlFor="grouped-select">카테고리</InputLabel>
                                 <Select defaultValue="" id="grouped-select" label="카테고리 선택" onChange={(e) => onChangeProductType(e)}>
                                     <ListSubheader value="feedType" style={{ fontWeight: "bold", color: "black"}}>사료</ListSubheader>
-                                    <MenuItem value="dryFeed">건식사료</MenuItem>
-                                    <MenuItem value="wetFeed">습식사료</MenuItem>
-                                    <MenuItem value="canFeed">통조림</MenuItem>
-                                    <MenuItem value="otherFeed">기타</MenuItem>
+                                    <MenuItem value={categoryEnum.DRY_FOOD}>건식사료</MenuItem>
+                                    <MenuItem value={categoryEnum.WET_FOOD}>습식사료</MenuItem>
+                                    <MenuItem value={categoryEnum.BOIL_FOOD}>화식사료</MenuItem>
+                                    <MenuItem value={categoryEnum.OTHER_FOOD}>기타</MenuItem>
                                     <ListSubheader value="snackType" style={{ fontWeight: "bold", color: "black"}}>간식</ListSubheader>
-                                    <MenuItem value="boonSnack">뼈 간식</MenuItem>
-                                    <MenuItem value="wetSnack">습식 간식</MenuItem>
-                                    <MenuItem value="meatSnack">고기 간식</MenuItem>
-                                    <MenuItem value="otherSnack">기타</MenuItem>
+                                    <MenuItem value={categoryEnum.FROZEN_SNACKS}>동결 간식</MenuItem>
+                                    <MenuItem value={categoryEnum.BONE_SNACKS}>뼈 간식</MenuItem>
+                                    <MenuItem value={categoryEnum.CHURU_SNACKS}>츄르 간식</MenuItem>
+                                    <MenuItem value={categoryEnum.TREATS_SNACKS}>트릿 간식</MenuItem>
+                                    <MenuItem value={categoryEnum.OTEHR_SANCKS}>기타</MenuItem>
                                     <ListSubheader value="snackType" style={{ fontWeight: "bold", color: "black"}}>옷</ListSubheader>
                                     <MenuItem value="tshirt">티셔츠</MenuItem>
                                     <MenuItem value="hood">후드</MenuItem>

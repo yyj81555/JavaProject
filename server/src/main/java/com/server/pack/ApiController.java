@@ -170,7 +170,7 @@ public class ApiController {
 
     @RequestMapping(value = "/api/GetProductInfo", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public Map<String, Object> GetProductInfo() {
+    public Map<String, Object> GetProductInfo(@RequestBody Map<String, String> body) {
         List result = new ArrayList();
         ResultSet rs = null;
         Map<String, Object> response = new HashMap<>();
@@ -180,7 +180,7 @@ public class ApiController {
             Connection conn = DriverManager.getConnection(url, user, password);
             Statement stmt = conn.createStatement();
 
-            String sql = "SELECT productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating FROM product";
+            String sql = "SELECT productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating, mainImageRoute, detailImageRoute FROM product WHERE PDC_number = \"" + body.get("PdcNumber") +"\"";
 
             rs = stmt.executeQuery(sql);
 
@@ -193,8 +193,10 @@ public class ApiController {
                 String productLink = rs.getString(6);
                 String bestReviewText = rs.getString(7);
                 String worstReviewText = rs.getString(8);
-                String bestRating = rs.getString(9);
-                String worstRating = rs.getString(10);
+                int bestRating = rs.getInt(9);
+                int worstRating = rs.getInt(10);
+                String mainImageRoute = rs.getString(11);
+                String detailImageRoute = rs.getString(12);
 
                 result.add(productName);
                 result.add(productPrice);
@@ -206,6 +208,8 @@ public class ApiController {
                 result.add(worstReviewText);
                 result.add(bestRating);
                 result.add(worstRating);
+                result.add(mainImageRoute);
+                result.add(detailImageRoute);
             }
             response.put("data", result);
 
@@ -238,19 +242,29 @@ public class ApiController {
         File bestReviewImageTargetFile = new File("../client/public/Image/Product/BestReview/" + bestReviewImageFile.getOriginalFilename());
         File worstReviewImageTargetFile = new File("../client/public/Image/Product/WorstReview/" + worstReviewImageFile.getOriginalFilename());
 
+        String mainImageRoute = mainImageTargetFile.toString();
+        String detailImageRoute = detailImageTargetFile.toString();
+        String bestReviewImageRoute = bestReviewImageTargetFile.toString();
+        String worstReviewImageRoute = worstReviewImageTargetFile.toString();
+
+        String resultMainImageRoute = mainImageRoute.replaceAll("\\\\", "/");
+        String resultDetailImageRoute = detailImageRoute.replaceAll("\\\\", "/");
+        String resultBestReviewImageRoute = bestReviewImageRoute.replaceAll("\\\\", "/");
+        String resultWorstReviewImageRoute = worstReviewImageRoute.replaceAll("\\\\", "/");
+
         ResultSet rs = null;
 
         try {
             InputStream mainImageFileStream = mainImageFile.getInputStream();
             FileUtils.copyInputStreamToFile(mainImageFileStream, mainImageTargetFile);
 
-            InputStream detailImageFileStream = mainImageFile.getInputStream();
+            InputStream detailImageFileStream = detailImageFile.getInputStream();
             FileUtils.copyInputStreamToFile(detailImageFileStream, detailImageTargetFile);
 
-            InputStream bestReviewImageFileStream = mainImageFile.getInputStream();
+            InputStream bestReviewImageFileStream = bestReviewImageFile.getInputStream();
             FileUtils.copyInputStreamToFile(bestReviewImageFileStream, bestReviewImageTargetFile);
 
-            InputStream worstReviewImageFileStream = mainImageFile.getInputStream();
+            InputStream worstReviewImageFileStream = worstReviewImageFile.getInputStream();
             FileUtils.copyInputStreamToFile(worstReviewImageFileStream, worstReviewImageTargetFile);
 
             try {
@@ -272,7 +286,7 @@ public class ApiController {
                         + pdcNumber + "\",\"" + productName +"\","+ productPrice + ",\""+ brandName + "\",\"" + origin + "\",\""
                         + weight + "\",\""+ productLink +"\",\""+ bestReview + "\",\""
                         + worstReview +"\","+ bestValue +"," + worstValue + ",\""
-                        + kind + "\",\"" + type + "\",\"" + mainImageTargetFile + "\",\"" + detailImageTargetFile + "\",\"" + bestReviewImageTargetFile + "\",\"" + worstReviewImageTargetFile + "\")";
+                        + kind + "\",\"" + type + "\",\"" + resultMainImageRoute + "\",\"" + resultDetailImageRoute + "\",\"" + resultBestReviewImageRoute + "\",\"" + resultWorstReviewImageRoute + "\")";
 
                 rs = stmt.executeQuery(sql);
 

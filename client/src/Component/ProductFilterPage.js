@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from "axios";
+import { useNavigate, Link } from 'react-router-dom';
+
 
 import { Box, ImageList, ImageListItem, ImageListItemBar, Typography } from '@mui/material';
 import {List, ListItemButton, Collapse, ListItemText} from '@mui/material';
@@ -9,6 +11,9 @@ export default function ProductFilterPage(props) {
   const [open, setOpen] = React.useState(true);
   const [product, setProduct] = React.useState("사료");
   const [type, setType] = React.useState("");
+
+
+  const navigate = useNavigate();
 
   const itemData = [
     {
@@ -44,6 +49,8 @@ export default function ProductFilterPage(props) {
       ID : "PDC-00004"
     },
   ]
+  
+  
 
   const showProduct = () => {
     return(
@@ -57,7 +64,7 @@ export default function ProductFilterPage(props) {
               srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
               alt={item.title}
               loading="lazy"
-              onClick={() => {window.sessionStorage.setItem("productID", item.ID); window.location.reload();}}
+              onClick={ (e) => {window.sessionStorage.setItem("productID", item.ID); navigate("../Product");}}
             />
             <ImageListItemBar
               title={item.title}
@@ -110,7 +117,7 @@ export default function ProductFilterPage(props) {
         </Box>
       </Box>
 
-      <text>{window.sessionStorage.getItem("productID")}</text>
     </div>
+    
   )
 }
