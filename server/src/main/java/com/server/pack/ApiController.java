@@ -180,7 +180,7 @@ public class ApiController {
             Connection conn = DriverManager.getConnection(url, user, password);
             Statement stmt = conn.createStatement();
 
-            String sql = "SELECT productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating, mainImageRoute, detailImageRoute FROM product WHERE PDC_number = \"" + body.get("PdcNumber") +"\"";
+            String sql = "SELECT PRODUCT_NAME, PRODUCT_PRICE, BRAND_NAME, ORIGIN, PRODUCT_WEIGHT, PRODUCT_LINK, BEST_REVIEW_TEXT, WORST_REVIEW_TEXT, BEST_RATING, WORST_RATING, MAIN_IMAGE_ROUTE, DETAIL_IMAGE_ROUTE FROM PRODUCT WHERE PDC_NUMBER = \"" + body.get("PdcNumber") +"\"";
 
             rs = stmt.executeQuery(sql);
 
@@ -274,7 +274,7 @@ public class ApiController {
 
                 String pdcNumber = null;
 
-                String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM product";   // 문자열
+                String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM PRODUCT";   // 문자열
 
                 rs = stmt.executeQuery(pdc);
 
@@ -282,7 +282,7 @@ public class ApiController {
                     pdcNumber = "PDC-" + rs.getString("LPAD(COUNT(*)+1,5,'0')");
                 }
 
-                String sql = "INSERT INTO product (PDC_number, productName, productPrice, brandName, origin, productWeight, productLink, bestReviewText, worstReviewText, bestRating, worstRating, kind, productType, mainImageRoute, detailImageRoute, bestImageRoute, worstImageRoute ) VALUES (\""
+                String sql = "INSERT INTO PRODUCT (PDC_NUMBER, PRODUCT_NAME, PRODUCT_PRICE, BRAND_NAME, ORIGIN, PRODUCT_WEIGHT, PRODUCT_LINK, BEST_REVIEW_TEXT, WORST_REVIEW_TEXT, BEST_RATING, WORST_RATING, KIND, PRODUCT_TYPE, MAIN_IMAGE_ROUTE, DETAIL_IMAGE_ROUTE, BEST_IMAGE_ROUTE, WORST_IMAGE_ROUTE ) VALUES (\""
                         + pdcNumber + "\",\"" + productName +"\","+ productPrice + ",\""+ brandName + "\",\"" + origin + "\",\""
                         + weight + "\",\""+ productLink +"\",\""+ bestReview + "\",\""
                         + worstReview +"\","+ bestValue +"," + worstValue + ",\""

@@ -13,4 +13,9 @@ const categoryEnum = Object.freeze({
     OTEHR_SANCKS : 15,  //기타사료
 })
 
+const productState = Object.freeze({
+    NOMAL : 0,  // 판매 가능상태
+    PAUSE : 1   // 판매 중지상태
+})
+
 export { categoryEnum };
