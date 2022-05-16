@@ -18,4 +18,4 @@ const productState = Object.freeze({
     PAUSE : 1   // 판매 중지상태
 })
 
-export { categoryEnum };
+export { categoryEnum, productState };

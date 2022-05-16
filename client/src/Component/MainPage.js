@@ -2,6 +2,11 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { style } from '@mui/system';
+
 export default function MainPage(props) {
     
 
@@ -43,51 +48,29 @@ export default function MainPage(props) {
 
     const imageArray = ['./Image/EventBarImage/dada1.jpg', './Image/EventBarImage/dada2.jpg',];
 
-  
-    const rightEventBar = () => {
-    
-        chechkNumber(referenceNumber + 1);
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 2000
+      };
 
-        if(referenceNumber >= 1){
-            chechkNumber(0);
-            eventBarImage.current.src= imageArray[referenceNumber];
-        }
-    }
-
-    const leftEventBar = () => {
-        chechkNumber(referenceNumber - 1);
-
-        if (referenceNumber <= 0  ){
-            chechkNumber(1);
-            eventBarImage.current.src= imageArray[referenceNumber];
-        }
-    }
-  
-     useEffect(() => {
-        const loop = setInterval( () => {
-            chechkNumber(referenceNumber + 1);
-        }, 2000);
-
-        return () => clearInterval(loop);
-    }, []);
 
 
     return(
         <div style={styles.dimmed_layer_wrapper}>
             <div style={styles.event_bar_area}>
-            <img
-                ref = {eventBarImage}
-                style={styles.event_bar_image_area}
-                src={imageArray[referenceNumber]}>
-                </img>
-                <Button variant="text"
-                style={styles.right_button}
-                onClick = {() => rightEventBar()}
-                >Text</Button>
-                <Button variant="text"
-                style={styles.left_button}
-                onClick = {() => leftEventBar()}
-                >Text</Button>
+                <Slider {...settings} style={{width: "95%", height:"500px",border: "1px solid black" ,margin: "auto"}}>
+                    <div>
+                        <img src={imageArray[0]} style={{objectFit: "cover", width:"100%", height: "500px"}}></img>
+                    </div>
+                    <div>
+                        <img src={imageArray[1]} style={{ objectFit :"cover", width:"100%", height: "500px"}}></img>
+                    </div>
+                </Slider>
             </div>
         </div>
     );
