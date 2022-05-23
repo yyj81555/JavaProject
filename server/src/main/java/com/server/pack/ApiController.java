@@ -29,7 +29,7 @@ public class ApiController {
 
     private static final String url = "jdbc:mariadb://127.0.0.1:3306/projectdb";
     private static final String user = "root";
-    private static final String password = "-1q2w3e4rfv";
+    private static final String password = "123456";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -92,11 +92,9 @@ public class ApiController {
         try {
             Class.forName(DBDriver);
             Connection conn = DriverManager.getConnection(url, user, password);
-
             Statement stmt = conn.createStatement();
 
             String encodedPassword = passwordEncoder.encode(body.get("userPassword"));
-
 
             String sql = "INSERT INTO account";
 
@@ -108,7 +106,7 @@ public class ApiController {
 
             if (Integer.parseInt(body.get("level")) == 1) {
                 sql += " (level, userID, userPassword, name, cellphoneNumber ) VALUE (\"" + body.get("level") + "\",\"" + body.get("userID") + "\",\"" + body.get("userPassword") + "\"," +
-                        "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\")";
+                        "\"" + body.get("name") + "\",\"" + body.get("cellphoneNumber") + "\")";
             } else if (Integer.parseInt(body.get("level")) == 2) {
                 sql += " (Level, UserID, UserPassword, Name, cellphoneNumber,cellphoneNumber,) VALUE (\"" + body.get("level") + "\", \"" + body.get("userID") + "\",\""
                         + encodedPassword + "\"," + "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\",\"" + body.get("companyName") + "\",\""
@@ -116,13 +114,38 @@ public class ApiController {
             }
 
             System.out.println(sql);
-
             rs = stmt.executeQuery(sql);
-
-            System.out.println(rs);
         } catch (Exception e) {};
 
         return "{\"result\": \"OK\"}";
+    }
+
+
+
+    @RequestMapping(value = "/api/UserIdConfirm", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String UserIdConfirm(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        int Confirm = 0;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT COUNT(*) FROM account WHERE userId = \"" + body.get("userID") + "\"";
+
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Confirm = rs.getInt("COUNT(*)");
+            }
+
+        } catch (Exception e) {};
+        if (Confirm == 0) {
+            return "{\"result\": \"ok\"}";
+        } else {
+            return "{\"result\": \"false\"}";
+        }
     }
 
     @RequestMapping(value = "/api/Login", method = RequestMethod.POST)
