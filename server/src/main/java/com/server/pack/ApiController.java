@@ -194,20 +194,21 @@ public class ApiController {
     @RequestMapping(value = "/api/GetProductInfo", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public Map<String, Object> GetProductInfo(@RequestBody Map<String, String> body) {
-        List result = new ArrayList();
         ResultSet rs = null;
         Map<String, Object> response = new HashMap<>();
-
         try {
             Class.forName(DBDriver);
             Connection conn = DriverManager.getConnection(url, user, password);
             Statement stmt = conn.createStatement();
 
-            String sql = "SELECT PRODUCT_NAME, PRODUCT_PRICE, BRAND_NAME, ORIGIN, PRODUCT_WEIGHT, PRODUCT_LINK, BEST_REVIEW_TEXT, WORST_REVIEW_TEXT, BEST_RATING, WORST_RATING, MAIN_IMAGE_ROUTE, DETAIL_IMAGE_ROUTE FROM TB_PRODUCT WHERE PDC_NUMBER = \"" + body.get("PdcNumber") +"\"";
+            String sql = "SELECT PRODUCT_NAME, PRODUCT_PRICE, BRAND_NAME, ORIGIN, PRODUCT_WEIGHT, PRODUCT_LINK, BEST_REVIEW_TEXT, WORST_REVIEW_TEXT, BEST_RATING, WORST_RATING, MAIN_IMAGE_ROUTE, DETAIL_IMAGE_ROUTE,BEST_IMAGE_ROUTE,WORST_IMAGE_ROUTE, PRODUCT_TYPE FROM TB_PRODUCT WHERE PDC_NUMBER = \"" + body.get("PdcNumber") +"\"";
 
             rs = stmt.executeQuery(sql);
 
+            List data = new ArrayList();
             while ( rs.next() ) {
+                Map<String, Object> result = new HashMap<>();
+
                 String productName = rs.getString(1);
                 String productPrice = rs.getString(2);
                 String brandName = rs.getString(3);
@@ -220,21 +221,93 @@ public class ApiController {
                 int worstRating = rs.getInt(10);
                 String mainImageRoute = rs.getString(11);
                 String detailImageRoute = rs.getString(12);
+                String bestImageRoute = rs.getString(13);
+                String worstImageRoute = rs.getString(14);
 
-                result.add(productName);
-                result.add(productPrice);
-                result.add(brandName);
-                result.add(origin);
-                result.add(productWeight);
-                result.add(productLink);
-                result.add(bestReviewText);
-                result.add(worstReviewText);
-                result.add(bestRating);
-                result.add(worstRating);
-                result.add(mainImageRoute);
-                result.add(detailImageRoute);
+                result.put("productName", productName);
+                result.put("productPrice", productPrice);
+                result.put("brandName", brandName);
+                result.put("origin", origin);
+                result.put("productWeight", productWeight);
+                result.put("productLink", productLink);
+                result.put("bestReviewText", bestReviewText);
+                result.put("worstReviewText", worstReviewText);
+                result.put("bestRating", bestRating);
+                result.put("worstRating", worstRating);
+                result.put("mainImageRoute", mainImageRoute);
+                result.put("detailImageRoute", detailImageRoute);
+                result.put("bestImageRoute", bestImageRoute);
+                result.put("worstImageRoute", worstImageRoute);
+
+                data.add(result);
             }
-            response.put("data", result);
+
+            response.put("data", data);
+        } catch ( Exception e ) {};
+
+        return response;
+    }
+
+    @RequestMapping(value = "/api/GetSimilarProduct", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public Map<String, Object> GetSimilarProduct(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        Map<String, Object> response = new HashMap<>();
+        String productType = null;
+        int index = 0;
+        String typeIndex = null;
+
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT PRODUCT_TYPE FROM TB_PRODUCT WHERE PDC_NUMBER = \"" + body.get("PdcNumber") + "\"";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ){
+                productType = rs.getString(1);
+
+                index = productType.indexOf(",");
+
+                typeIndex = productType.substring(0, index + 1);
+            }
+
+            sql = "SELECT PRODUCT_NAME, PRODUCT_PRICE, BEST_RATING, MAIN_IMAGE_ROUTE, PDC_NUMBER, TOTAL_VALUE " +
+                    "FROM " +
+                    "(" +
+                    "SELECT PRODUCT_NAME, PRODUCT_PRICE, BEST_RATING, MAIN_IMAGE_ROUTE, PDC_NUMBER, BEST_RATING + WORST_RATING AS TOTAL_VALUE " +
+                    "FROM TB_PRODUCT " +
+                    "WHERE PRODUCT_TYPE LIKE \"" + typeIndex + "%\" AND NOT PDC_NUMBER IN (\""+ body.get("PdcNumber") +"\")" +
+                    "ORDER BY TOTAL_VALUE DESC" +
+                    ") X " +
+                    "LIMIT 0, 10";
+
+            rs = stmt.executeQuery(sql);
+
+            List data = new ArrayList();
+
+            while ( rs.next() ) {
+
+                Map<String, Object> result = new HashMap<>();
+
+                String recomProductName = rs.getString(1);
+                String recomProductPrice = rs.getString(2);
+                int recomBestRating = rs.getInt(3);
+                String recomMainImageRoute = rs.getString(4);
+                String recomPdcNumber = rs.getString(5);
+
+                result.put("recomProductName",recomProductName);
+                result.put("recomProductPrice",recomProductPrice);
+                result.put("recomBestRating",recomBestRating);
+                result.put("recomMainImageRoute",recomMainImageRoute);
+                result.put("recomPdcNumber",recomPdcNumber);
+
+                data.add(result);
+            }
+
+            response.put("data", data);
 
         } catch ( Exception e ) {};
 
