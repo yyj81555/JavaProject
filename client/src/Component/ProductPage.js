@@ -185,6 +185,7 @@ export default function ProductPage(props) {
 
   const PdcNumber = window.sessionStorage.getItem("productID");
 
+  const ID = window.sessionStorage.getItem("name");//로그인상태 유지
 
   useEffect( () => {
     getProductInfo();

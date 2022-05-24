@@ -385,7 +385,7 @@ export default function AddProductPage(props) {
                             동물 종류
                         </div>
                         <div style={{width:"350px",display: "inline-block", position: "relative", top: "-24px", left: "0px", borderBottom: "1px solid #5e6c81"}}>
-                            <RadioGroup
+                            <RadioGroup 
                                 aria-labelledby="demo-radio-buttons-group-label"
                                 defaultValue="dog"
                                 name="radio-buttons-group"

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
+import axios from "axios";
 
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { style } from '@mui/system';
+import TextField from '@mui/material/TextField';
 
 export default function MainPage(props) {
     
@@ -41,11 +43,8 @@ export default function MainPage(props) {
             left: "500px"
         }
     }
-
-    const [referenceNumber, chechkNumber] = useState(0);
-
-    const eventBarImage = useRef(null);
-
+    const [email, setEmail] = React.useState("");
+    
     const imageArray = ['./Image/EventBarImage/dada1.jpg', './Image/EventBarImage/dada2.jpg',];
 
     const settings = {
@@ -58,7 +57,31 @@ export default function MainPage(props) {
         autoplaySpeed: 2000
       };
 
+      const inputEmail = (e) => {
+        setEmail(e.target.value);
+      }
 
+      const sendEmail = (e) => {
+        e.preventDefault();
+
+        const data = {
+            email : email
+        }
+
+        axios.post("/api/sendEmail", data)
+        .then(res => {
+            const body = res.data;
+            
+          })
+          .catch( res => console.log(res))
+      }
+
+    const userID = window.sessionStorage.getItem("name");
+        console.log(userID);
+        
+    const test = () => {
+        console.log(userID);
+    }
 
     return(
         <div style={styles.dimmed_layer_wrapper}>
@@ -71,6 +94,16 @@ export default function MainPage(props) {
                         <img src={imageArray[1]} style={{ objectFit :"cover", width:"100%", height: "500px"}}></img>
                     </div>
                 </Slider>
+            </div>
+            <div style={{marginTop: "100px", height: "200px"}}>
+                <form method="post" onSubmit={sendEmail}>
+                    <TextField id="standard-basic" label="이메일인증" variant="standard" onChange={(e) => inputEmail(e)}/>
+                    <Button type="submit" variant="contained">이메일 인증</Button>
+                </form>
+            </div>
+            <br/>
+            <div onClick={()=>test()}>
+                확인
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import axios from "axios";
 import { BrowserRouter, Link, Route, Routes  } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ import SignUpPage from './Component/SignUpPage';
 import MyPage from './Component/MyPage';
 import ProductPage from './Component/ProductPage';
 import ProductFilterPage from './Component/ProductFilterPage';
+import { display } from '@mui/system';
 
 export default function App(props) {
   const styles = {
@@ -36,6 +37,52 @@ export default function App(props) {
   const [file, setFile] = React.useState(null);
   // useEffect(() => {}, []);
 
+  const loginButton = useRef(null);
+  const userName = useRef(null);
+  const ID = window.sessionStorage.getItem("name");
+  const signUpButton = useRef(null);
+  const myPage = useRef(null);
+  const logoutButton = useRef(null);
+
+  const loginState = () => {
+    
+    if (ID !== null) {
+      loginButton.current.style.display="none";
+      userName.current.style.display="block";
+      signUpButton.current.style.display="none";
+      myPage.current.style.display="block";
+      logoutButton.current.style.display="block";
+    }
+
+  }
+
+  const logout = () => {
+    
+    let ID = window.sessionStorage.removeItem("name");
+
+    if (ID === null) {
+      loginButton.current.style.display="block";
+      userName.current.style.display="none";
+      signUpButton.current.style.display="block";
+      myPage.current.style.display="none";
+      logoutButton.current.style.display="none";
+
+    }
+    window.location.reload();
+  }
+
+  const reload = () => {
+    window.location.reload();
+  }
+
+  useEffect( () => {
+    loginState();
+
+    
+  
+
+
+  },[]);
   const TopBar = () => {
     return (
       <>
@@ -49,24 +96,32 @@ export default function App(props) {
             메인페이지
           </Button>
         </Link>
-        <Link to={"/MyPage"}>
-          <Button>
-            MyPage
-            </Button>
-        </Link>
         <Link to={"/product"}>
           <Button>
             상세 페이지
             </Button>
         </Link>
-        <Link to={"/Login"}>
-          <Button>
+        <Link to={"/Login"}>         
+          <Button ref={loginButton}>
             로그인
           </Button>
         </Link>
+          <div ref={userName} style={{display: "none", color: "black"}}>
+          {`${ID}님`}
+          </div>
         <Link to={"/SignUp"}>
-          <Button>
+          <Button ref={signUpButton}>
             회원가입
+          </Button>
+        </Link>
+        <Link to={"/Mypage"}>
+          <Button ref={myPage} style={{display: "none"}}>
+            마이페이지
+          </Button>
+        </Link>
+        <Link to={"/"}>
+          <Button ref={logoutButton} style={{display: "none"}} onClick={logout}>
+            로그아웃
           </Button>
         </Link>
       </>

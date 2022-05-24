@@ -12,7 +12,7 @@ export default function LoginPage(props) {
 
     const styles = {
         dimmed_layer_wrapper : {
-            position: "fixed",
+            
             top:80,
             right:0,
             bottom:0,
@@ -38,9 +38,14 @@ export default function LoginPage(props) {
         
         setMSG(body.result);
 
-        if(body.result === "OK") {
+        if(body.result === "OK") {   
             navigate("/");
         }
+
+        window.sessionStorage.setItem("name", userID);
+        window.location.reload();
+
+        
     }
 
     

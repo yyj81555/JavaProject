@@ -25,6 +25,7 @@ export default function SignUpPage(props) {
   const [companyName,setCompanyName] = React.useState("");
   const [businessName,setBusinessName] = React.useState("");
   const [companyNumber,setCompanyNumber] = React.useState("");
+  const [userEmail,setUserEmail] = React.useState("");
   
   const styles = {
     dimmed_layer_wrapper : {
@@ -61,6 +62,7 @@ export default function SignUpPage(props) {
       userPassword: userPassword,
       name: name,
       cellphoneNumber: cellphoneNumber,
+      userEmail: userEmail,
       contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
     }
   }
@@ -69,6 +71,7 @@ export default function SignUpPage(props) {
 	    level: value,
       userID: userID,
       userPassword: userPassword,
+      userEmail:userEmail,
       companyName: companyName,
       businessName: businessName,
       companyNumber: companyNumber,
@@ -114,7 +117,7 @@ export default function SignUpPage(props) {
     }
   }
   
-  const handleChange = (event, newValue) => {
+  const handleChange = (event, newValue) => {// 판매자 구매자 나눌때 쓰는 것
     setValue(newValue);
   };
 
@@ -145,6 +148,7 @@ export default function SignUpPage(props) {
   const SellerCheckSignUpData = () => {
     if (setUserID === "") return false;
     else if (setUserPassword === "") return false;
+    else if (setCellphoneNumber === "") return false;
     else if (setCompanyName === "") return false;
     else if (setBusinessName === "") return false;
     else if (setCompanyNumber === "") return false;
@@ -178,6 +182,8 @@ export default function SignUpPage(props) {
                   <TextField value={userPasswordConfirm} placeholder='패스워드확인' style={{marginTop: 10, marginLeft: 13}} onChange={(e) => PasswordConfirm(e.target.value, userPassword)}/>
                   <br/>
                   { isUserPasswordSame ? <text style={{marginLeft: -50}}>비밀번호가 일치합니다.</text> : <text style={{marginLeft: -50}}>비밀번호가 일치하지 않습니다 . </text> }
+                  <br/>
+                  <TextField placeholder='이메일' style={{marginTop: 10, marginLeft: -60}} onChange={e => setUserEmail}/>
                   <br/>
                   <TextField placeholder='이름' style={{marginTop: 10, marginLeft: -60}} onChange={e => setName(e.target.value)}/>
                   <br/>
