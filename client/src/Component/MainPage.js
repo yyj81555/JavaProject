@@ -30,21 +30,9 @@ export default function MainPage(props) {
             height: "100%",
             objectFit: "cover",
         },
-        right_button : {
-            margin: "auto",
-            border: "1px solid black",
-            top: "-300px",
-            left: "-500px"
-        },
-        left_button : {
-            margin: "auto",
-            border: "1px solid black",
-            top: "-300px",
-            left: "500px"
-        }
     }
     const [email, setEmail] = React.useState("");
-    
+
     const imageArray = ['./Image/EventBarImage/dada1.jpg', './Image/EventBarImage/dada2.jpg',];
 
     const settings = {
@@ -63,6 +51,7 @@ export default function MainPage(props) {
 
       const sendEmail = (e) => {
         e.preventDefault();
+
 
         const data = {
             email : email

@@ -67,7 +67,7 @@ export default function AddProductPage(props) {
         second_table_sec : {
             width: "1000px",
             height: "500px",
-            marginTop: "-254px"
+            marginTop: "-255px"
         },
         second_explanation_sec : {
             textAlign: "center",
@@ -108,7 +108,7 @@ export default function AddProductPage(props) {
         third_table_sec : {
             width: "1000px",
             height: "322px",
-            marginTop: "214px"
+            marginTop: "210px"
         },
         third_explanation_sec : {
             textAlign: "center",
@@ -125,7 +125,7 @@ export default function AddProductPage(props) {
             height: "322px",
             display: "inline-block",
             position: "relative",
-            top: "68px",
+            top: "69px",
             marginLeft: "0px"
         },
         review_rating : {
@@ -399,7 +399,7 @@ export default function AddProductPage(props) {
                         <div style={{ width: "150px", height: "150px", display: "inline-block", position: "relative", borderBottom: "1px solid #5e6c81", lineHeight: "150px", textAlign: "center", backgroundColor: "#f0f7ff", color: "#233756", }}>
                             물건 종류
                         </div>
-                        <div style={{width:"350px",height: "150px",display: "inline-block", position: "relative", top: "-64px", left: "0px", borderBottom: "1px solid #5e6c81"}}>
+                        <div style={{width:"350px",height: "150px",display: "inline-block", position: "relative", top: "-63px", left: "0px", borderBottom: "1px solid #5e6c81"}}>
                             <FormControl sx={{ m: 1, minWidth: 120, marginTop: "50px" }}>
                                 <InputLabel htmlFor="grouped-select">카테고리</InputLabel>
                                 <Select defaultValue="" id="grouped-select" label="카테고리 선택" onChange={(e) => onChangeProductType(e)}>

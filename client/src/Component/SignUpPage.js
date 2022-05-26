@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useRef } from 'react';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -26,6 +27,11 @@ export default function SignUpPage(props) {
   const [businessName,setBusinessName] = React.useState("");
   const [companyNumber,setCompanyNumber] = React.useState("");
   const [userEmail,setUserEmail] = React.useState("");
+  const [serverCheckNumber, setServerCheckNumber] = React.useState("");
+  const [checkNumber, setCheckNumber] = React.useState("");
+
+  const checkNumberBox = useRef(null);
+  const checkEmailText = useRef(null);
   
   const styles = {
     dimmed_layer_wrapper : {
@@ -38,7 +44,7 @@ export default function SignUpPage(props) {
     prodct_content : {
       border: "1px solid black",
       width: "600px",
-      height: "650px",
+      height: "800px",
       margin: "auto",
       marginTop: "100px",
       textAlign: "center",
@@ -76,6 +82,7 @@ export default function SignUpPage(props) {
       businessName: businessName,
       companyNumber: companyNumber,
       cellphoneNumber: cellphoneNumber,
+      userEmail: userEmail,
       contentType: "application/json; UTF-8;", // 한국어도 깨짐없이 전송하는 방법.
     }
   }
@@ -120,6 +127,31 @@ export default function SignUpPage(props) {
   const handleChange = (event, newValue) => {// 판매자 구매자 나눌때 쓰는 것
     setValue(newValue);
   };
+
+  const onClickSendMail = () => {
+
+    alert("인증번호가 전송되었습니다.");
+    checkNumberBox.current.style.display = "inline-flex";
+
+    axios.post("/api/sendEmail", {email: userEmail})
+    .then(res => {
+      const body = res.data;
+      setServerCheckNumber(body);
+      console.log(body);
+    })
+    .catch( err => console.log(err))
+  }
+
+  const onClickCheckNumber = () => {
+    if (checkNumber == serverCheckNumber) {
+      alert("인증 되었습니다.");
+      checkEmailText.current.style.display = "block";
+    }
+    else {
+      alert("인증번호가 틀립니다.");
+    }
+    checkNumberBox.current.style.display = "none";
+  }
 
   const UserIdConfirm = async () => {
     const response = await axios.post("/api/UserIdConfirm", {
@@ -185,6 +217,16 @@ export default function SignUpPage(props) {
                   <br/>
                   <TextField placeholder='이메일' style={{marginTop: 10, marginLeft: -60}} onChange={e => setUserEmail}/>
                   <br/>
+                  <TextField placeholder='이메일' style={{marginTop: 10, marginLeft: 55}} onChange={e => setUserEmail(e.target.value)}/>
+                  <Button type="submit" variant="contained" style={{ marginTop: 25, marginLeft: 30 }} onClick={() => onClickSendMail()}>이메일 인증</Button>
+                  <br/>
+                  <div ref={checkNumberBox} style={{display: "none"}}>
+                    <TextField placeholder='인증번호를 입력하세요' style={{marginTop: 10, marginLeft: 70}} onChange={e => setCheckNumber(e.target.value)}/>
+                    <Button type="submit" variant="contained" style={{ marginTop: 25, marginLeft: 30, width: "100px", height: "25px" }} onClick={() => onClickCheckNumber()}>인증번호 확인</Button>
+                  </div>
+                  <div ref={checkEmailText} style={{ marginLeft: "-160px", display: "none"}}>
+                    인증되었습니다.
+                  </div>
                   <TextField placeholder='이름' style={{marginTop: 10, marginLeft: -60}} onChange={e => setName(e.target.value)}/>
                   <br/>
                   <TextField placeholder='전화번호' style={{marginTop: 10, marginLeft: -60}} onChange={e => setCellphoneNumber(e.target.value)}/>
@@ -210,6 +252,17 @@ export default function SignUpPage(props) {
                   <br/>
                   { isUserPasswordSame ? <text style={{marginLeft: -50}}>비밀번호가 일치합니다.</text> : <text style={{marginLeft: -50}}>비밀번호가 일치하지 않습니다 . </text>}
                   <br/>
+                  <br/>
+                  <TextField placeholder='이메일' style={{marginTop: 10, marginLeft: 55}} onChange={e => setUserEmail(e.target.value)}/>
+                  <Button type="submit" variant="contained" style={{ marginTop: 25, marginLeft: 30 }} onClick={() => onClickSendMail()}>이메일 인증</Button>
+                  <br/>
+                  <div ref={checkNumberBox} style={{display: "none"}}>
+                    <TextField placeholder='인증번호를 입력하세요' style={{marginTop: 10, marginLeft: 70}} onChange={e => setCheckNumber(e.target.value)}/>
+                    <Button type="submit" variant="contained" style={{ marginTop: 25, marginLeft: 30, width: "100px", height: "25px" }} onClick={() => onClickCheckNumber()}>인증번호 확인</Button>
+                  </div>
+                  <div ref={checkEmailText} style={{ marginLeft: "-160px", display: "none"}}>
+                    인증되었습니다.
+                  </div>
                   <TextField placeholder='전화번호' style={{marginTop: 10, marginLeft: -60}} onChange={e => setCellphoneNumber(e.target.value)}/>
                   <br/>
                   <TextField placeholder='사업장명' style={{marginTop: 10, marginLeft: -60}} onChange={e => setCompanyName(e.target.value)}/>

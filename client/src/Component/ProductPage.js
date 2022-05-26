@@ -183,7 +183,7 @@ export default function ProductPage(props) {
   
   const detailImageSize = new Image();
 
-  const PdcNumber = window.sessionStorage.getItem("productID");
+  const PdcNumber = window.sessionStorage.getItem("productID"); 
 
   const ID = window.sessionStorage.getItem("name");//로그인상태 유지
 

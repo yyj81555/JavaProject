@@ -1,8 +1,8 @@
 import './App.css';
 import React from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, Component } from 'react';
 import axios from "axios";
-import { BrowserRouter, Link, Route, Routes  } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes, useNavigate  } from 'react-router-dom';
 
 import { AppBar, Toolbar, Box, Typography, Grid, List, ListItemButton } from '@mui/material';
 import { Button } from '@mui/material';
@@ -16,6 +16,8 @@ import MyPage from './Component/MyPage';
 import ProductPage from './Component/ProductPage';
 import ProductFilterPage from './Component/ProductFilterPage';
 import { display } from '@mui/system';
+
+import { categoryEnum } from './Component/const';
 
 export default function App(props) {
   const styles = {
@@ -35,6 +37,7 @@ export default function App(props) {
   }
   const [showCategory, setShowCategory] = React.useState(false);
   const [file, setFile] = React.useState(null);
+  let [type, setType] = React.useState(0);
   // useEffect(() => {}, []);
 
   const loginButton = useRef(null);
@@ -151,7 +154,7 @@ export default function App(props) {
         <Box style={{width: 1400, height: 300, border: "1px solid black", zIndex: 100, position:"absolute", backgroundColor: "#ffffff",}}>
           <Grid container spacing={1}>
             <Grid item xs={3}>
-              <List style={styles.listStyle} onClick={() => {window.location.href='ProductFilter';}}>
+              <List style={styles.listStyle} onClick={() => {window.sessionStorage.setItem("type", categoryEnum.FOOD); window.location.href='ProductFilter';}}>
                 <ListItemButton style={styles.listStyle.buttonTitleStyle}>
                   사료
                 </ListItemButton>
@@ -161,15 +164,8 @@ export default function App(props) {
                 <ListItemButton style={styles.listStyle.buttonNomalStyle}>
                   &nbsp;&nbsp;&nbsp;습식 사료
                 </ListItemButton>
-              </List>
-            </Grid>
-            <Grid item xs={3}>
-            <List style={styles.listStyle}>
-                <ListItemButton style={styles.listStyle.buttonTitleStyle}>
-                  장난감
-                </ListItemButton>
                 <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;삑삑이
+                  &nbsp;&nbsp;&nbsp;화식 사료
                 </ListItemButton>
               </List>
             </Grid>
@@ -179,79 +175,16 @@ export default function App(props) {
                   간식
                 </ListItemButton>
                 <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;뼈 간식
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;습식 간식
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;고기 간식
-                </ListItemButton>
-              </List>
-            </Grid>
-            <Grid item xs={3}>
-              <List style={styles.listStyle}>
-                <ListItemButton style={styles.listStyle.buttonTitleStyle}>
-                  산책용품
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;리드줄
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;똥츄
-                </ListItemButton>
-              </List>
-            </Grid>
-
-            <Grid item xs={3}>
-              <List style={styles.listStyle}>
-                <ListItemButton style={styles.listStyle.buttonTitleStyle}>
-                  사료
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;건식 사료
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;습식 사료
-                </ListItemButton>
-              </List>
-            </Grid>
-            <Grid item xs={3}>
-            <List style={styles.listStyle}>
-                <ListItemButton style={styles.listStyle.buttonTitleStyle}>
-                  장난감
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;삑삑이
-                </ListItemButton>
-              </List>
-            </Grid>
-            <Grid item xs={3}>
-              <List style={styles.listStyle}>
-                <ListItemButton style={styles.listStyle.buttonTitleStyle}>
-                  간식
+                  &nbsp;&nbsp;&nbsp;동결 간식
                 </ListItemButton>
                 <ListItemButton style={styles.listStyle.buttonNomalStyle}>
                   &nbsp;&nbsp;&nbsp;뼈 간식
                 </ListItemButton>
                 <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;습식 간식
+                  &nbsp;&nbsp;&nbsp;츄르
                 </ListItemButton>
                 <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;고기 간식
-                </ListItemButton>
-              </List>
-            </Grid>
-            <Grid item xs={3}>
-              <List style={styles.listStyle}>
-                <ListItemButton style={styles.listStyle.buttonTitleStyle}>
-                  산책용품
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;리드줄
-                </ListItemButton>
-                <ListItemButton style={styles.listStyle.buttonNomalStyle}>
-                  &nbsp;&nbsp;&nbsp;똥츄
+                  &nbsp;&nbsp;&nbsp;트릿
                 </ListItemButton>
               </List>
             </Grid>
@@ -286,7 +219,7 @@ export default function App(props) {
           </Toolbar>
         </AppBar>
 
-        <img src='./Image/MainLogo.png' alt='' style={{margin: "0 auto", width:250, height: 65, marginTop: 5, marginBottom: 2}}/>
+        <img src='./Image/MainLogo.png' alt='' onClick={() => {window.location.href="MainPage";}} style={{margin: "0 auto", width:250, height: 65, marginTop: 5, marginBottom: 2}}/>
         <Box
           style={{
             backgroundColor: "#ffffff",

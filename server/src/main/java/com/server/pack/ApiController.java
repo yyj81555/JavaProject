@@ -1,27 +1,26 @@
 package com.server.pack;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ansi.Ansi8BitColor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class ApiController {
@@ -29,10 +28,14 @@ public class ApiController {
 
     private static final String url = "jdbc:mariadb://127.0.0.1:3306/projectdb";
     private static final String user = "root";
-    private static final String password = "123456";
+    private static final String password = "-1q2w3e4rfv";
+
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JavaMailSender javaMailSender;
+
 
     @RequestMapping(value = "/api/test", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
@@ -105,12 +108,12 @@ public class ApiController {
             System.out.println(test1);
 
             if (Integer.parseInt(body.get("level")) == 1) {
-                sql += " (level, userID, userPassword, name, cellphoneNumber ) VALUE (\"" + body.get("level") + "\",\"" + body.get("userID") + "\",\"" + body.get("userPassword") + "\"," +
-                        "\"" + body.get("name") + "\",\"" + body.get("cellphoneNumber") + "\")";
+                sql += " (level, userID, userPassword, name, cellphoneNumber, userEmail ) VALUE (\"" + body.get("level") + "\",\"" + body.get("userID") + "\",\"" + encodedPassword + "\"," +
+                        "\"" + body.get("name") + "\",\"" + body.get("cellphoneNumber") + "\",\""+ body.get("userEmail") + "\")";
             } else if (Integer.parseInt(body.get("level")) == 2) {
-                sql += " (Level, UserID, UserPassword, Name, cellphoneNumber,cellphoneNumber,) VALUE (\"" + body.get("level") + "\", \"" + body.get("userID") + "\",\""
-                        + encodedPassword + "\"," + "\"" + body.get("name") + "\"," + body.get("cellphoneNumber") + "\",\"" + body.get("companyName") + "\",\""
-                        + body.get("businessName") + "\",\"" + body.get("companyNumber") + "\")";
+                sql += " (Level, UserID, UserPassword, Name, cellphoneNumber,companyName,businessName,companyNumber,userEmail ) VALUE (\"" + body.get("level") + "\", \"" + body.get("userID") + "\",\""
+                        + encodedPassword + "\"," + "\"" + body.get("name") + "\",\"" + body.get("cellphoneNumber") + "\",\"" + body.get("companyName") + "\",\""
+                        + body.get("businessName") + "\",\"" + body.get("companyNumber") + "\",\""+ body.get("userEmail") +"\")";
             }
 
             System.out.println(sql);
@@ -405,4 +408,74 @@ public class ApiController {
         return "{\"result\": \"OK\"}";
     }
 
+    @RequestMapping(value = "/api/sendEmail", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String sendMail(@RequestBody Map<String, String> body) {
+        ArrayList<String> toUserList = new ArrayList<>();
+
+        String toEmail = body.get("email");
+
+        Random random = new Random();
+        int tempRandomNumber = random.nextInt(888888) + 111111;
+
+        String authenticationNumber = Integer.toString(tempRandomNumber);
+
+
+        //수신 대상 추가
+        toUserList.add(toEmail);
+        //수신 대상 개수
+        int toUserSize = toUserList.size();
+
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo((String[]) toUserList.toArray(new String[toUserSize]));
+
+        simpleMailMessage.setSubject("회원가입 인증 코드 발급 안내입니다.");
+        simpleMailMessage.setText("인증번호는 "+ authenticationNumber + " 입니다.");
+
+        //javaMailSender.send(simpleMailMessage);
+
+        return authenticationNumber;
+    }
+
+    @RequestMapping(value = "/api/GetProduct", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public Map<String, Object> GetProduct() {
+        ResultSet rs = null;
+        Map<String, Object> response = new HashMap<>();
+        List data = new ArrayList();
+        try{
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT PDC_NUMBER, PRODUCT_NAME, MAIN_IMAGE_ROUTE, BRAND_NAME, KIND, PRODUCT_TYPE FROM TB_PRODUCT";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ){
+                Map<String, Object> result = new HashMap<>();
+
+                String pdcNumber = rs.getString(1);
+                String productName = rs.getString(2);
+                String mainImageRoute = rs.getString(3);
+                String brand = rs.getString(4);
+                String kind = rs.getString(5);
+                String productType = rs.getString(6);
+
+                result.put("pdcNumber",pdcNumber);
+                result.put("productName",productName);
+                result.put("mainImageRoute",mainImageRoute);
+                result.put("brand",brand);
+                result.put("kind",kind);
+                result.put("productType",productType);
+
+                data.add(result);
+            }
+
+            response.put("data", data);
+
+        } catch ( Exception e) {}
+
+        return response;
+    }
 }
