@@ -1,74 +1,80 @@
-import React from 'react';
+import React, { useEffect,Component } from 'react';
 import axios from "axios";
 import { useNavigate, Link } from 'react-router-dom';
 
-
 import { Box, ImageList, ImageListItem, ImageListItemBar, Typography } from '@mui/material';
 import {List, ListItemButton, Collapse, ListItemText} from '@mui/material';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import { ExpandMore, ExpandLess, ReplayOutlined } from '@mui/icons-material';
+
+import { categoryEnum } from './const';
 
 export default function ProductFilterPage(props) {
-  const [open, setOpen] = React.useState(true);
-  const [product, setProduct] = React.useState("사료");
-  const [type, setType] = React.useState("");
+  const [openFirstTab, setOpenFirstTab] = React.useState(true);
+  const [openSecondTab, setOpenSecondTab] = React.useState(true);
+  const [productInfo, setProductInfo] = React.useState([]);
+
 
 
   const navigate = useNavigate();
 
-  const itemData = [
-    {
-      img: './Image/Product/ZIWI.jpg',
-      title: '지위픽 고등어 and 양 사료',
-      author: '지위픽',
-      product: "사료",
-      type: "건식 사료",
-      ID : "PDC-00001"
-    },
-    {
-      img: './Image/Product/NOW.jpg',
-      title: '나우 어덜트',
-      author: '나우',
-      product: "사료",
-      type: "건식 사료",
-      ID : "PDC-00002"
-    },
-    {
-      img: './Image/Product/RoyalCanin.jpg',
-      title: '로얄캐닌 통조림',
-      author: '로얄캐닌',
-      product: "사료",
-      type: "습식 사료",
-      ID : "PDC-00003"
-    },
-    {
-      img: './Image/Product/MOISTURE.jpg',
-      title: '모이스트루 습식사료',
-      author: '모이스트루',
-      product: "사료",
-      type: "습식 사료",
-      ID : "PDC-00004"
-    },
-  ]
+  const tempType = parseInt(window.sessionStorage.getItem("type"));
   
+  useEffect( () => {
+    axios.post("/api/GetProduct")
+    .then(res => {
+      const body = res.data;
+      setProductInfo(body.data);
+      console.log(body.data);
+    })
+    .catch( err => console.log(err))
+  },[]);
   
+  const test = () => {
+    console.log(tempType);
+  }
+
+  const stringCategory = () => {
+    switch (tempType) {
+      case 1:
+        return "사료"
+      case 2:
+        return "사료 > 건식사료"
+      case 3:
+        return "사료 > 습식사료"
+      case 4:
+        return "사료 > 화식사료"
+      case 10:
+        return "간식"
+      case 11:
+        return "간식 > 동결간식"
+      case 12:
+        return "간식 > 뼈간식"
+      case 13:
+        return "간식 > 츄르"
+      case 14:
+        return "간식 > 트릿"
+      default:
+        return null
+    }
+  }
 
   const showProduct = () => {
     return(
       <ImageList cols={3}>
-        {itemData.map((item) => (
-          item.product === product && 
-          (type === "" || item.type === type) ?
-          <ImageListItem key={item.img}>
+        {productInfo.map((item) => (
+          parseInt(item.productType.split(",")[0]) === tempType || parseInt(item.productType.split(",")[1]) === tempType
+          ?
+          <ImageListItem key={item.mainImageRoute}>
             <img
-              src={`${item.img}?w=248&fit=crop&auto=format`}
-              srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-              alt={item.title}
+              src={item.mainImageRoute.replace("../client/public", ".")}
+              srcSet={item.mainImageRoute.replace("../client/public", ".")}
+              alt={item.productName}
               loading="lazy"
-              onClick={ (e) => {window.sessionStorage.setItem("productID", item.ID); navigate("../Product");}}
+              onClick={ (e) => {window.sessionStorage.setItem("productID", item.pdcNumber); navigate("../Product");}}
             />
             <ImageListItemBar
-              title={item.title}
-              subtitle={<span>판매처: {item.author}</span>}
+              title={item.productName}
+              subtitle={<span>판매처: {item.brand}</span>}
               position="bottom"
             />
           </ImageListItem> : null
@@ -95,20 +101,33 @@ export default function ProductFilterPage(props) {
           padding: 6,
           width:1400,
         }}>
-          <Typography>{product}{type !== "" ? " > " + type : null}</Typography>
+          <Typography>{stringCategory()}</Typography>
         </Box>
       </Box>
 
       <Box style={{width:1400, display: "flex", margin: "0 auto", justifyContent:"center"}}>
         <Box style={{width:300, height: 1200, border: "1px solid black", marginRight: 10}}>
           <List>
-            <ListItemButton onClick={() => {setOpen(!open); setProduct("사료"); setType("");}}>
+            <ListItemButton onClick={() => {setOpenFirstTab(!openFirstTab); window.sessionStorage.setItem("type", categoryEnum.FOOD);}}>
               <ListItemText primary="사료" />
-              {open ? <ExpandLess /> : <ExpandMore />}
+              {openFirstTab ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
-            <Collapse in={open}>
-              <ListItemButton onClick={() => {setProduct("사료"); setType("건식 사료");}}>&nbsp;&nbsp;&nbsp;건식 사료</ListItemButton>
-              <ListItemButton onClick={() => {setProduct("사료"); setType("습식 사료");}}>&nbsp;&nbsp;&nbsp;습식 사료</ListItemButton>
+            <Collapse in={openFirstTab}>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.DRY_FOOD); window.location.reload();}}>&nbsp;&nbsp;&nbsp;건식 사료</ListItemButton>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.WET_FOOD); window.location.reload();}}>&nbsp;&nbsp;&nbsp;습식 사료</ListItemButton>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.BOIL_FOOD); window.location.reload();}}>&nbsp;&nbsp;&nbsp;화식 사료</ListItemButton>
+            </Collapse>
+          </List>
+          <List>
+            <ListItemButton onClick={() => {setOpenSecondTab(!openSecondTab);  window.sessionStorage.setItem("type", categoryEnum.SNACKS);}}>
+              <ListItemText primary="간식" />
+              {openSecondTab ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={openSecondTab}>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.FROZEN_SNACKS); window.location.reload();}}>&nbsp;&nbsp;&nbsp;동결 간식</ListItemButton>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.BONE_SNACKS); window.location.reload();}}>&nbsp;&nbsp;&nbsp;뼈 간식</ListItemButton>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.CHURU_SNACKS); window.location.reload();}}>&nbsp;&nbsp;&nbsp;츄르</ListItemButton>
+              <ListItemButton onClick={() => {window.sessionStorage.setItem("type", categoryEnum.TREATS_SNACKS); window.location.reload();}}>&nbsp;&nbsp;&nbsp;트릿</ListItemButton>
             </Collapse>
           </List>
         </Box>
@@ -116,7 +135,6 @@ export default function ProductFilterPage(props) {
           {showProduct()}
         </Box>
       </Box>
-
     </div>
     
   )
