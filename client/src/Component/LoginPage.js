@@ -9,7 +9,8 @@ export default function LoginPage(props) {
     const [userID, setUserID] = React.useState("");
     const [userPassword, setUserPassword] = React.useState("");
     const [msg, setMSG] = React.useState("");
-
+    const [userInfo,setUserInfo] = React.useState("");
+    
     const styles = {
         dimmed_layer_wrapper : {
             
@@ -39,12 +40,36 @@ export default function LoginPage(props) {
         setMSG(body.result);
 
         if(body.result === "OK") {   
-            navigate("/");
+            axios.post("/api/GetUserInfo", {userID: userID})
+            .then(res => {
+                const body = res.data;
+        
+                setUserInfo(body);
+            
+                window.sessionStorage.setItem("level", body.level);
+                window.sessionStorage.setItem("userPassword", body.userPassword);
+                window.sessionStorage.setItem("name", body.name);
+                window.sessionStorage.setItem("userEmail", body.userEmail);
+                window.sessionStorage.setItem("cellphoneNumber", body.cellphoneNumber);
+                window.sessionStorage.setItem("companyName", body.companyName);
+                window.sessionStorage.setItem("businessName", body.businessName);
+                window.sessionStorage.setItem("companyNumber", body.companyNumber);
+                window.sessionStorage.setItem("petType", body.petType);
+                window.sessionStorage.setItem("petKind", body.petKind);
+
+                console.log(body.name);
+                console.log(body.companyName);
+                console.log(body.cellphoneNumber);
+
+            }).catch( res => console.log(res))
+
+            //navigate("/");
+            window.sessionStorage.setItem("ID", userID);
+            //window.location.reload();
+              
         }
 
-        window.sessionStorage.setItem("name", userID);
-        window.location.reload();
-
+        
         
     }
 

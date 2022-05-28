@@ -42,7 +42,7 @@ export default function App(props) {
 
   const loginButton = useRef(null);
   const userName = useRef(null);
-  const ID = window.sessionStorage.getItem("name");
+  const ID = window.sessionStorage.getItem("ID");
   const signUpButton = useRef(null);
   const myPage = useRef(null);
   const logoutButton = useRef(null);
@@ -61,7 +61,18 @@ export default function App(props) {
 
   const logout = () => {
     
-    let ID = window.sessionStorage.removeItem("name");
+    let ID = window.sessionStorage.removeItem("ID");
+    window.sessionStorage.removeItem("level");
+    window.sessionStorage.removeItem("userPassword");
+    window.sessionStorage.removeItem("name");
+    window.sessionStorage.removeItem("userEmail");
+    window.sessionStorage.removeItem("cellphoneNumber");
+    window.sessionStorage.removeItem("companyName");
+    window.sessionStorage.removeItem("businessName");
+    window.sessionStorage.removeItem("companyNumber");
+    window.sessionStorage.removeItem("petType");
+    window.sessionStorage.removeItem("petKind");
+
 
     if (ID === null) {
       loginButton.current.style.display="block";
@@ -74,16 +85,9 @@ export default function App(props) {
     window.location.reload();
   }
 
-  const reload = () => {
-    window.location.reload();
-  }
-
+  
   useEffect( () => {
     loginState();
-
-    
-  
-
 
   },[]);
   const TopBar = () => {
@@ -122,11 +126,9 @@ export default function App(props) {
             마이페이지
           </Button>
         </Link>
-        <Link to={"/"}>
           <Button ref={logoutButton} style={{display: "none"}} onClick={logout}>
             로그아웃
           </Button>
-        </Link>
       </>
     )
   }

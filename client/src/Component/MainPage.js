@@ -65,12 +65,7 @@ export default function MainPage(props) {
           .catch( res => console.log(res))
       }
 
-    const userID = window.sessionStorage.getItem("name");
-        console.log(userID);
-        
-    const test = () => {
-        console.log(userID);
-    }
+    window.sessionStorage.getItem("ID");
 
     return(
         <div style={styles.dimmed_layer_wrapper}>

@@ -194,6 +194,52 @@ public class ApiController {
         return "{\"result\": \"OK\"}";
     }
 
+    @RequestMapping(value = "/api/GetUserInfo", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public Map<String, Object> GetUserInfo(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT LEVEL, USERPASSWORD, NAME, USEREMAIL, CELLPHONENUMBER, COMPANYNAME, BUSINESSNAME," +
+                    " COMPANYNUMBER, PETTYPE, PETKINDWHERE USERID = \"" + body.get("userID")+ "\"";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ) {
+
+                int level = rs.getInt(1);
+                String userPassword = rs.getString(2);
+                String name = rs.getString(3);
+                String userEmail = rs.getString(4);
+                String cellphoneNumber = rs.getString(5);
+                String companyName = rs.getString(6);
+                String businessName = rs.getString(7);
+                String companyNumber = rs.getString(8);
+                String petType = rs.getString(9);
+                String petKind = rs.getString(10);
+
+                response.put("level", level);
+                response.put("userPassword", userPassword);
+                response.put("name", name);
+                response.put("userEmail", userEmail);
+                response.put("cellphoneNumber", cellphoneNumber);
+                response.put("companyName", companyName);
+                response.put("businessName", businessName);
+                response.put("companyNumber", companyNumber);
+                response.put("petType", petType);
+                response.put("petKind", petKind);
+
+            }
+
+        } catch ( Exception e ) {};
+
+        return response;
+    }
+
     @RequestMapping(value = "/api/GetProductInfo", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public Map<String, Object> GetProductInfo(@RequestBody Map<String, String> body) {
