@@ -169,8 +169,8 @@ export default function ProductPage(props) {
   const [worstImg, getWorstImg] = React.useState("");
   const [bestImageSrc, setBestImageSrc] = React.useState("");
   const [worstImageSrc, setWorstImageSrc] = React.useState("");
-
   const [recomProductInfo, setRecomProductInfo] = React.useState([]);
+  const [favoriteProduct, setFavoriteProduct] = React.useState([]);
 
   const navigate = useNavigate();
 
@@ -180,6 +180,8 @@ export default function ProductPage(props) {
   const closedButton = useRef(null);
   const bestImageRef = useRef(null);
   const worstImageRef = useRef(null);
+  const borderHeart = useRef(null);
+  const fullHeart = useRef(null);
   
   const detailImageSize = new Image();
 
@@ -190,6 +192,7 @@ export default function ProductPage(props) {
   useEffect( () => {
     getProductInfo();
     getSimilarProduct();
+    getFavoriteProduct();
   },[]);
 
   const getProductInfo = () => {
@@ -218,7 +221,7 @@ export default function ProductPage(props) {
 
             setDetailImageSrc(c.detailImageRoute.replace("../client/public", "."));
             productDetail.current.src = c.detailImageRoute.replace("../client/public", ".");
-
+            
             setBestImageSrc(c.bestImageRoute.replace("../client/public", "."));
             bestImageRef.current.src = c.bestImageRoute.replace("../client/public", ".");
 
@@ -244,6 +247,24 @@ export default function ProductPage(props) {
     .catch( res => console.log(res))
   }
 
+  const getFavoriteProduct = () => {
+    axios.post("/api/getFavoriteProduct", {PdcNumber : PdcNumber, name : window.sessionStorage.getItem("name")})
+    .then( res => {
+      const body = res.data;
+      setFavoriteProduct(body);
+
+      for( var i=0; i<body.length; i++) {
+        if( PdcNumber == body[i]){
+          borderHeart.current.style.display="none";
+          fullHeart.current.style.display="block";
+        }
+      }
+    })
+    .catch ( err => console.log(err))
+  }
+
+  
+
   const openProductDetailImg = (e) => {
     productDetail.current.style.height = detailImageHeight +"px";
     openButton.current.style.display = "none";
@@ -256,6 +277,42 @@ export default function ProductPage(props) {
     closedButton.current.style.display = "none";
   }
 
+  const removeFavoriteProduct = () => {
+    borderHeart.current.style.display="block";
+    fullHeart.current.style.display="none";
+
+    const removeFavoriteData = favoriteProduct.filter((note) => note !== PdcNumber);
+
+    let result = JSON.stringify(removeFavoriteData);
+
+    result = result.replace("[", "");
+    result = result.replace(/"/gi, "");
+    result = result.replace("]", "");
+    
+  
+    axios.post("/api/RemoveFavoriteProduct", {favoriteProduct : result, id : window.sessionStorage.getItem("ID")})
+      .then( res => {
+        const body = res.data;
+      })
+      .catch( err => console.log(err))
+  }
+
+  const addFavoriteProduct = () => {
+    if(window.sessionStorage.getItem("ID") == null){
+      alert("로그인을 해야합니다.");
+      navigate("/Login");
+    }else{
+      borderHeart.current.style.display="none";
+      fullHeart.current.style.display="block";
+      axios.post("/api/AddFavoriteProduct", {PdcNumber : PdcNumber, id : window.sessionStorage.getItem("ID")})
+      .then( res => {
+        const body = res.data;
+      })
+      .catch( err => console.log(err))
+    }
+  }
+
+
   const settings = {
     dots: true,
     infinite: true,
@@ -267,6 +324,12 @@ export default function ProductPage(props) {
   return (
     <div style={styles.dimmed_layer_wrapper}>
       <div style={styles.prodct_content}>
+        <div ref={borderHeart}>
+          <img onClick={() => addFavoriteProduct()} src="./Image/FavoriteBorder.png" style={{width: "28px", height: "25px", objectFit: "cover",position:"relative" ,left: "1150px", top: "20px", cursor: "pointer"}}></img>
+        </div>
+        <div ref={fullHeart} style={{display:"none"}}>
+          <img src="./Image/Favorite.png" onClick={() => removeFavoriteProduct()} style={{width: "28px", height: "25px", objectFit: "cover",position:"relative" ,left: "1150px", top: "20px", cursor: "pointer"}}></img>
+        </div>
         <div style={styles.product_type}>
           [상품 분류]
         </div>
@@ -381,7 +444,7 @@ export default function ProductPage(props) {
               <StyledSlider {...settings} style={{width: "1000px", border: "1px solid red", margin: "auto"}}>
                 {
                   recomProductInfo.map((product) => (
-                    <div onClick={ (e) => {window.sessionStorage.setItem("productID", product.recomPdcNumber); window.location.reload();}}>
+                    <div key={product} onClick={ (e) => {window.sessionStorage.setItem("productID", product.recomPdcNumber); window.location.reload();}}>
                       <div style={{ border: "1px solid black",width: "140px", height: "210px",marginRight: "20px"}}>
                         <img src={product.recomMainImageRoute.replace("../client/public", ".")} style={{ width: "100px", height: "100px", margin: "auto", marginTop: "10px", objectFit:"cover"}}></img>
                         <div style={{fontSize: "15px", height: "40px", overflow: "hidden"}}>{`${product.recomProductName}`}</div>

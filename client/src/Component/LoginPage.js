@@ -5,6 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { TextField } from '@mui/material';
 import { Button } from 'react-bootstrap';
 
+import {KAKAO_AUTH_URL} from './Oauth.js';
+
 export default function LoginPage(props) {
     const [userID, setUserID] = React.useState("");
     const [userPassword, setUserPassword] = React.useState("");
@@ -13,11 +15,11 @@ export default function LoginPage(props) {
     
     const styles = {
         dimmed_layer_wrapper : {
-            
             top:80,
             right:0,
             bottom:0,
             left:0,
+            height: "2000px"
         },
     };
 
@@ -45,6 +47,8 @@ export default function LoginPage(props) {
                 const body = res.data;
         
                 setUserInfo(body);
+
+                console.log(body);
             
                 window.sessionStorage.setItem("level", body.level);
                 window.sessionStorage.setItem("userPassword", body.userPassword);
@@ -56,7 +60,6 @@ export default function LoginPage(props) {
                 window.sessionStorage.setItem("companyNumber", body.companyNumber);
                 window.sessionStorage.setItem("petType", body.petType);
                 window.sessionStorage.setItem("petKind", body.petKind);
-
                 console.log(body.name);
                 console.log(body.companyName);
                 console.log(body.cellphoneNumber);
@@ -66,14 +69,9 @@ export default function LoginPage(props) {
             //navigate("/");
             window.sessionStorage.setItem("ID", userID);
             //window.location.reload();
-              
         }
-
-        
-        
     }
-
-    
+   
 
     const OnClickSignUp = async () => {
        
@@ -92,9 +90,12 @@ export default function LoginPage(props) {
             <Button onClick={() => OnClickLogin()} style={{marginTop: 10}}> 로그인 </Button>
             <br/>
             <Link to={"/SignUp"}>
-            <Button onClick={() => OnClickSignUp()} style={{marginTop: 5}}> 회원가입 </Button>
+                <Button onClick={() => OnClickSignUp()} style={{marginTop: 5}}> 회원가입 </Button>
             </Link>
             <br/>
+            <a href={KAKAO_AUTH_URL}>
+                <div style={{width: "183px",height: "45px",backgroundImage: "url('./Image/kakao_login_medium_narrow.png')",backgroundSize: "cover" ,margin: "10px auto"}}></div>
+            </a>
             <text> {msg} </text>
         </div>
     );

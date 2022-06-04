@@ -104,7 +104,6 @@ export default function SignUpPage(props) {
     if (userIdLangth > 8) {
       alert("글자 수는 2-8여야 합니다");
     }
-    
   }
 
   const OnChangeUserPassword = (val) => {
@@ -214,8 +213,6 @@ export default function SignUpPage(props) {
                   <TextField value={userPasswordConfirm} placeholder='패스워드확인' style={{marginTop: 10, marginLeft: 13}} onChange={(e) => PasswordConfirm(e.target.value, userPassword)}/>
                   <br/>
                   { isUserPasswordSame ? <text style={{marginLeft: -50}}>비밀번호가 일치합니다.</text> : <text style={{marginLeft: -50}}>비밀번호가 일치하지 않습니다 . </text> }
-                  <br/>
-                  <TextField placeholder='이메일' style={{marginTop: 10, marginLeft: -60}} onChange={e => setUserEmail}/>
                   <br/>
                   <TextField placeholder='이메일' style={{marginTop: 10, marginLeft: 55}} onChange={e => setUserEmail(e.target.value)}/>
                   <Button type="submit" variant="contained" style={{ marginTop: 25, marginLeft: 30 }} onClick={() => onClickSendMail()}>이메일 인증</Button>

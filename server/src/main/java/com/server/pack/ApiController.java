@@ -2,24 +2,17 @@ package com.server.pack;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ansi.Ansi8BitColor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.*;
 import java.util.*;
 
 @RestController
@@ -205,7 +198,7 @@ public class ApiController {
             Statement stmt = conn.createStatement();
 
             String sql = "SELECT LEVEL, USERPASSWORD, NAME, USEREMAIL, CELLPHONENUMBER, COMPANYNAME, BUSINESSNAME," +
-                    " COMPANYNUMBER, PETTYPE, PETKINDWHERE USERID = \"" + body.get("userID")+ "\"";
+                    " COMPANYNUMBER, PETTYPE, PETKIND FROM ACCOUNT WHERE USERID = \"" + body.get("userID")+ "\"";
 
             rs = stmt.executeQuery(sql);
 
@@ -523,5 +516,274 @@ public class ApiController {
         } catch ( Exception e) {}
 
         return response;
+    }
+
+    @RequestMapping(value = "/api/AddFavoriteProduct", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String AddFavoriteProduct(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        String pushFavoriteProduct = "";
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT FAVORITE_PRODUCT FROM account WHERE userID = \"" + body.get("id") + "\"";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ){
+                pushFavoriteProduct = rs.getString(1);
+            }
+
+            if( pushFavoriteProduct == null) {
+                pushFavoriteProduct = body.get("PdcNumber");
+            }else{
+                pushFavoriteProduct += ","+body.get("PdcNumber");
+            }
+
+            sql = "UPDATE account SET FAVORITE_PRODUCT = \"" + pushFavoriteProduct + "\" WHERE userId = \"" + body.get("id") + "\"";
+
+            rs = stmt.executeQuery(sql);
+
+        } catch ( Exception e ) {}
+        return "ok";
+    }
+
+
+    @RequestMapping(value = "/api/RemoveFavoriteProduct", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String RemoveFavoriteProduct(@RequestBody Map<String, Object> body) {
+        ResultSet rs = null;
+
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "UPDATE account SET FAVORITE_PRODUCT=\"" + body.get("favoriteProduct") +"\"WHERE userID = \""+ body.get("id") +"\"" ;
+
+            rs = stmt.executeQuery(sql);
+        } catch ( Exception e ) {}
+
+        return "ok";
+    }
+
+    @RequestMapping(value ="/api/getFavoriteProduct", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String[] getFavoriteProduct(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        String pushFavoriteProduct = "";
+        String[] response = null;
+
+        try{
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT FAVORITE_PRODUCT FROM account WHERE userId = \"" + body.get("name") + "\"";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ) {
+                pushFavoriteProduct = rs.getString(1);
+            }
+            response = pushFavoriteProduct.split(",");
+
+        } catch ( Exception e ){}
+
+        return  response;
+    }
+
+    @RequestMapping(value = "/api/GetFavoriteCount", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String GetFavoriteCount(@RequestBody Map<String, String>body){
+        ResultSet rs = null;
+        String favoriteCount = "";
+        try{
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT FAVORITE_PRODUCT FROM ACCOUNT WHERE USERID = \"" + body.get("userId") + "\"";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ){
+                favoriteCount = rs.getString(1);
+            }
+        } catch ( Exception e ){}
+
+        return favoriteCount;
+    }
+
+    @RequestMapping(value ="/api/GetImageRoute", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public Map<String, Object> GetImageRoute(@RequestBody Map<String, Object>body){
+        ResultSet rs = null;
+        List data = new ArrayList();
+        Map<String, Object> response = new HashMap<>();
+
+        String[] list = body.get("pdcNumber").toString().split(",");
+        int count = Integer.parseInt(body.get("count").toString());
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            Map<String, Object> result = new HashMap<>();
+
+            for( var i=0; i<count; i++) {
+                String sql = "SELECT MAIN_IMAGE_ROUTE FROM TB_PRODUCT WHERE PDC_NUMBER =\"" + list[i] + "\"";
+
+                rs = stmt.executeQuery(sql);
+
+                while ( rs.next() ){
+                    String mainImageRoute = rs.getString(1);
+
+                    System.out.println(mainImageRoute);
+
+                    data.add(mainImageRoute);
+                    data.add(list[i]);
+
+                    System.out.println(data);
+                }
+            }
+
+        } catch ( Exception e ){}
+
+        response.put("data", data);
+
+        return response;
+    }
+
+    @RequestMapping(value = "/api/KakaoLogin", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String KakaoLogin(@RequestBody Map<String, String>body) {
+        String access_Token = "";
+        String refresh_Token = "";
+        String reqURL = "https://kauth.kakao.com/oauth/token";
+
+        String result = null;
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("grant_type=authorization_code");
+            sb.append("&client_id=3a80fea018fc149a49837a8d88094df5"); // TODO REST_API_KEY 입력
+            sb.append("&redirect_uri=http://localhost:3000/KakaoCode"); // TODO 인가코드 받은 redirect_uri 입력
+            sb.append("&code=" + body.get("code"));
+            bw.write(sb.toString());
+            bw.flush();
+
+            int responseCode = conn.getResponseCode();
+            //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/api/GetKakaoUserInfo", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String GetKakaoUserInfo(@RequestBody Map<String, String>body) {
+
+        HashMap<String, Object> userInfo = new HashMap<String, Object>();
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
+
+        String result = "";
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            conn.setRequestProperty("Authorization", "Bearer " + body.get("token"));
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode : " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+        } catch (Exception e) {
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value = "/api/CheckUserInfo", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public int CheckUserInfo(@RequestBody Map<String, String>body){
+        System.out.println(body.get("id"));
+        ResultSet rs = null;
+        int check = 0;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "SELECT EXISTS( SELECT USERID FROM ACCOUNT WHERE USERID = \"" + body.get("id") + "\" )";
+
+            rs = stmt.executeQuery(sql);
+
+            while ( rs.next() ) {
+                check = rs.getInt(1);
+            }
+
+            System.out.println(check); // data가 존재하면 1  아니라면 0;
+        } catch ( Exception e ) {}
+
+        return check;
+    }
+
+    @RequestMapping(value = "/api/CreatKakaoUser", method =  RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String CreatKakaoUser(@RequestBody Map<String, String>body){
+        System.out.println(body.get("ID"));
+        System.out.println(body.get("email"));
+        System.out.println(body.get("name"));
+        System.out.println(body.get("cellPhone"));
+
+        ResultSet rs = null;
+
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "INSERT INTO account";
+
+            if( Integer.parseInt(body.get("level")) == 1 ) {
+                sql += " (level, userID, name, cellphoneNumber, userEmail ) VALUE (\"" + body.get("level") + "\",\"" + body.get("ID") + "\"," +
+                        "\"" + body.get("name") + "\",\"" + body.get("cellPhone") + "\",\""+ body.get("email") + "\")";
+            }else if ( Integer.parseInt(body.get("level")) == 2 ){
+                sql += " (Level, UserID, Name, cellphoneNumber,companyName,businessName,companyNumber,userEmail ) VALUE (\"" + body.get("level") + "\", \"" + body.get("ID") + "\","
+                        + "\"" + body.get("name") + "\",\"" + body.get("cellPhone") + "\",\"" + body.get("companyName") + "\",\""
+                        + body.get("businessName") + "\",\"" + body.get("companyNumber") + "\",\""+ body.get("email") +"\")";
+            }
+
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+
+        } catch ( Exception e ) {}
+        return "ok";
     }
 }

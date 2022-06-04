@@ -15,6 +15,8 @@ import SignUpPage from './Component/SignUpPage';
 import MyPage from './Component/MyPage';
 import ProductPage from './Component/ProductPage';
 import ProductFilterPage from './Component/ProductFilterPage';
+import KakaoSignUp from './Component/KakaoSignUp';
+import Kakao from './Component/Kakao';
 import { display } from '@mui/system';
 
 import { categoryEnum } from './Component/const';
@@ -36,7 +38,6 @@ export default function App(props) {
     }
   }
   const [showCategory, setShowCategory] = React.useState(false);
-  const [file, setFile] = React.useState(null);
   let [type, setType] = React.useState(0);
   // useEffect(() => {}, []);
 
@@ -133,23 +134,6 @@ export default function App(props) {
     )
   }
 
-  const saveImage = async() => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const config = {
-      headers: {
-          'content-type': 'multipart/form-data'
-      }
-  }
-    await axios.post("/api/SaveImage", formData, config)
-    .then(res => {
-      window.location.reload();
-    })
-    .catch(err =>{
-        console.log(err);
-    })
-}
-
   const showCategoryField = () => {
     return(
       <>
@@ -238,8 +222,6 @@ export default function App(props) {
           </Box>
         </Box>
 
-        <input type="file" file={file} onChange={(e) => {setFile(e.target.files[0]);}}/>
-        <Button placeholder='파일추가' onClick={() => saveImage()}>파일 추가</Button>
         <Routes>
           <Route exact path="/AddProduct" element={ <AddProductPage/>}/>
           <Route exact path="/MainPage" element={ <MainPage/>}/>
@@ -248,6 +230,8 @@ export default function App(props) {
           <Route exact path="/SignUp" element={ <SignUpPage/> }/>
           <Route exact path="/product" element={ <ProductPage/> }/>
           <Route exact path="/ProductFilter" element={ <ProductFilterPage/> }/>
+          <Route exact path="/KakaoCode" element={ <Kakao/> }/>
+          <Route exact path="/KakaoSignUp" element={ <KakaoSignUp/> }/>
         </Routes>
       </div>
     </BrowserRouter>

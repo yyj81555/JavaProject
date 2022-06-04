@@ -13,8 +13,6 @@ export default function ProductFilterPage(props) {
   const [openSecondTab, setOpenSecondTab] = React.useState(true);
   const [productInfo, setProductInfo] = React.useState([]);
 
-
-
   const navigate = useNavigate();
 
   const tempType = parseInt(window.sessionStorage.getItem("type"));
@@ -24,14 +22,9 @@ export default function ProductFilterPage(props) {
     .then(res => {
       const body = res.data;
       setProductInfo(body.data);
-      console.log(body.data);
     })
     .catch( err => console.log(err))
   },[]);
-  
-  const test = () => {
-    console.log(tempType);
-  }
 
   const stringCategory = () => {
     switch (tempType) {

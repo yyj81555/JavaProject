@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from "axios";
 
 import { Link } from 'react-router-dom';
@@ -8,6 +8,8 @@ import { Button } from '@mui/material';
 
 export default function Mypage(props) {
     const [userConfirm, setUserConfirm] = React.useState(false);
+    const [favoriteCount, setFavoriteCount] = React.useState(0);
+    const [test1, test2] = React.useState(false);
     //
     const ID = window.sessionStorage.getItem("ID");
     const level = window.sessionStorage.getItem("level");
@@ -39,6 +41,50 @@ export default function Mypage(props) {
 
         }
     };
+    
+    useEffect( () => {
+        getFavoriteCount();
+    },[]);
+
+    const getFavoriteCount = () => {
+        axios.post("/api/GetFavoriteCount", {userId: window.sessionStorage.getItem("ID")})
+        .then( res => {
+            const body = res.data;
+            
+            setFavoriteCount(body.split(",").length);
+            
+            getImageRoute(body.split(","), body.split(",").length);
+            
+        })
+        .catch( err => console.log(err))
+    }
+
+    const getImageRoute = (favoritePdcNumber, count) => {
+
+        console.log(favoritePdcNumber);
+        console.log(count);
+        
+        let result = JSON.stringify(favoritePdcNumber);
+        result = result.replace("[", "");
+        result = result.replace(/"/gi, "");
+        result = result.replace("]", "");
+    
+
+        axios.post("/api/GetImageRoute", { pdcNumber: result, count: count})
+        .then( res => {
+            const body = res.data;
+
+            console.log(body);
+        })
+        .catch( err => console.log(err))
+    }
+
+    const test = () => {
+        console.log(1);
+        return (
+            <div>ㅎㅎ</div>
+        )
+    }
 
     const userInfo = () => {
         
@@ -50,7 +96,7 @@ export default function Mypage(props) {
                     <text style={{fontSize:"24px" }}>기본정보</text><br/><br/><br/>
                     </div>
                     <div style={{display: "inline-block", marginLeft:"10px"}}>
-                    <text style={{fontSize:"16px", color: 'gray'}}>기본정보</text>
+                        <text style={{fontSize:"16px", color: 'gray'}}>기본정보</text>
                         <text style={{fontSize:"16px",marginLeft: "10px" }}>{`${ID}`}</text>
                         <br/><br/>
                         <text style={{fontSize:"16px", color: 'gray'}}>이메일</text>
@@ -59,11 +105,9 @@ export default function Mypage(props) {
                         <text style={{fontSize:"16px", marginLeft: "10px" }}>{`${cellphoneNumber}`}</text>
                     </div>
                     <div style={{position:"relative",top:"-84px",display: "inline-block", marginLeft: "5px"}}>
-                        <Link to={"/UserInfo"}>
-                            <Button style={{width:18, height:18}}>
-                                수정 
-                            </Button>
-                        </Link>
+                        <Button onClick={() => {test2(!test1); setUserConfirm(!userConfirm)}} style={{width:18, height:18}}>
+                            수정 
+                        </Button>
                     </div>
                     
 
@@ -99,7 +143,7 @@ export default function Mypage(props) {
                     </div>
                     <div style={{position:"relative",top:"-126px",display: "inline-block", marginLeft: "5px"}}>
                         <Link to={"/UserInfo"}>
-                            <Button style={{width:18, height:18}}>
+                            <Button  style={{width:18, height:18}}>
                                 수정 
                             </Button>
                         </Link>
@@ -112,23 +156,30 @@ export default function Mypage(props) {
        
     } 
 
-    React.useEffect(() => {
-        // init
-    }, []);
-
     return (
         <div style={styles.dimmed_layer_wrapper}>
             <div style={styles.user_data}>
                 <div style={{width: "400px", height: "200px", textAlign:"Left"}}>
                     <div style={{marginTop:"10px",marginLeft:"10px"}}>
-                    <text>{`${ID}님`}</text>
-                    <img src='./Image/Setting.png' alt='' style={{width:18, height:18,marginLeft:"2px"}} onClick={()=>setUserConfirm(!userConfirm)}/><br/>
-                    <text>{`${userEmail}`}</text>
+                        <text>{`${ID}님`}</text>
+                        <img src='./Image/Setting.png' alt='' style={{width:18, height:18,marginLeft:"2px"}} onClick={()=>{setUserConfirm(!userConfirm); test2(!test1)}}/><br/>
+                        <text>{`${userEmail}`}</text>
+                    </div>
+                    <div style={{ width: "500px", height: "80px", borderLeft: "3px solid gray" ,position: "relative", left: "500px"}}>
+                        <div style={{width: "100px", height: "80px", marginLeft: "40px", fontSize: "20px"}}>
+                            관심
+                            <div style={{ marginTop: "20px", cursor: "pointer"}}>
+                                <img src='./Image/FavoriteBorder.png' style={{width: "26px", height: "24px", objectFit: "cover", display: "inline-block"}}></img>
+                                <div style={{ fontSize: "23px" ,color: "rgb(238,21,85)", fontWeight: "bold", display: "inline-block", position:"relative", top:"-5px", left: "10px"}}>{`${favoriteCount}`}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
                 <div>
                     {userConfirm ? userInfo(): null}
+                </div>
+                <div>
+                    {test1 ? test(): null}
                 </div>
                 
             </div>
