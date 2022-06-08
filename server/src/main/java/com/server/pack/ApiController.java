@@ -153,7 +153,7 @@ public class ApiController {
             Connection conn = DriverManager.getConnection(url, user, password);
             Statement stmt = conn.createStatement();
 
-            String sql = "SELECT UserPassword FROM account WHERE UserID = \"" + body.get("userID") + "\"";
+            String sql = "SELECT UserPassword FROM account WHERE UserID = \"" +body.get("user ID") + "\"";
             rs = stmt.executeQuery(sql);
 
             String DBPassword = "";
@@ -412,7 +412,7 @@ public class ApiController {
 
                 String pdcNumber = null;
 
-                String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM TB_PRODUCT";   // 문자열
+                String pdc = "SELECT LPAD(COUNT(*)+1,5,'0'), COUNT(*) FROM TB_PRODUCT";
 
                 rs = stmt.executeQuery(pdc);
 
@@ -581,7 +581,7 @@ public class ApiController {
             Connection conn = DriverManager.getConnection(url, user, password);
             Statement stmt = conn.createStatement();
 
-            String sql = "SELECT FAVORITE_PRODUCT FROM account WHERE userId = \"" + body.get("name") + "\"";
+            String sql = "SELECT FAVORITE_PRODUCT FROM account WHERE userId = \"" + body.get("id") + "\"";
 
             rs = stmt.executeQuery(sql);
 
@@ -643,8 +643,7 @@ public class ApiController {
 
                     System.out.println(mainImageRoute);
 
-                    data.add(mainImageRoute);
-                    data.add(list[i]);
+                    data.add(mainImageRoute +","+ list[i]);
 
                     System.out.println(data);
                 }

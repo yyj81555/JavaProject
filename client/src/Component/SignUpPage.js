@@ -108,12 +108,12 @@ export default function SignUpPage(props) {
 
   const OnChangeUserPassword = (val) => {
     setUserPassword(val);
-
     PasswordConfirm(userPasswordConfirm, val);
   }
 
   const PasswordConfirm = (confirm, password) => {
     setUserPasswordConfirm(confirm);
+    
     if (password === confirm || "" === confirm) {
       setIsUserPasswordSame(true);
     }
@@ -169,20 +169,20 @@ export default function SignUpPage(props) {
   }
 
   const UserCheckSignUpData = () => {
-    if (setUserID === "") return false;
-    else if (setUserPassword === "") return false;
-    else if (setName === "") return false;
-    else if (setCellphoneNumber === "") return false;
+    if (userID === "") return false;
+    else if (userPassword === "") return false;
+    else if (name === "") return false;
+    else if (cellphoneNumber === "") return false;
     return true;
   }
 
   const SellerCheckSignUpData = () => {
-    if (setUserID === "") return false;
-    else if (setUserPassword === "") return false;
-    else if (setCellphoneNumber === "") return false;
-    else if (setCompanyName === "") return false;
-    else if (setBusinessName === "") return false;
-    else if (setCompanyNumber === "") return false;
+    if (userID === "") return false;
+    else if (userPassword === "") return false;
+    else if (cellphoneNumber === "") return false;
+    else if (companyName === "") return false;
+    else if (businessName === "") return false;
+    else if (companyNumber === "") return false;
     return true;
   }
   

@@ -5,8 +5,6 @@ import { useState, useEffect, useRef } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { style } from '@mui/system';
-import TextField from '@mui/material/TextField';
 
 export default function MainPage(props) {
     
@@ -30,9 +28,8 @@ export default function MainPage(props) {
             objectFit: "cover",
         },
     }
-    const [email, setEmail] = React.useState("");
 
-    const imageArray = ['./Image/EventBarImage/dada1.jpg', './Image/EventBarImage/dada2.jpg',];
+    const imageArray = ['./Image/EventBarImage/FirstEventBar.png', './Image/EventBarImage/SecondEventBar.png',];
 
     const settings = {
         dots: true,
@@ -41,13 +38,13 @@ export default function MainPage(props) {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 2000
+        autoplaySpeed: 3000
       };
 
     return(
         <div style={styles.dimmed_layer_wrapper}>
             <div style={styles.event_bar_area}>
-                <Slider {...settings} style={{width: "95%", height:"500px",border: "1px solid black" ,margin: "auto"}}>
+                <Slider {...settings} style={{width: "95%", height:"500px",margin: "auto"}}>
                     <div>
                         <img src={imageArray[0]} style={{objectFit: "cover", width:"100%", height: "500px"}}></img>
                     </div>

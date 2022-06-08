@@ -10,6 +10,9 @@ export default function Mypage(props) {
     const [userConfirm, setUserConfirm] = React.useState(false);
     const [favoriteCount, setFavoriteCount] = React.useState(0);
     const [test1, test2] = React.useState(false);
+    const [test3, test4] = React.useState(false);
+    const [hoho, haha] = React.useState({});
+    const [length, setLength] = React.useState(0);
     //
     const ID = window.sessionStorage.getItem("ID");
     const level = window.sessionStorage.getItem("level");
@@ -60,9 +63,6 @@ export default function Mypage(props) {
     }
 
     const getImageRoute = (favoritePdcNumber, count) => {
-
-        console.log(favoritePdcNumber);
-        console.log(count);
         
         let result = JSON.stringify(favoritePdcNumber);
         result = result.replace("[", "");
@@ -74,16 +74,38 @@ export default function Mypage(props) {
         .then( res => {
             const body = res.data;
 
-            console.log(body);
+            haha(body.data);
+            setLength(body.data.length);
+            console.log(body.data[0].split(","));
+            console.log(body.data[1].split(","));
         })
         .catch( err => console.log(err))
     }
 
     const test = () => {
-        console.log(1);
         return (
-            <div>ㅎㅎ</div>
+            <div style={{width: "100%", height: "600px", border: "1px solid black"}}></div>
         )
+    }
+
+    const showFavoriteSec = () => {
+        console.log(length);
+        return (
+            <div style={{ width: "100%", height: "600px", border: "1px solid black"}}>
+                <div style={{  border: "1px solid black", fontSize: "25px", fontWeight: "bold", textAlign: "left"}}>
+                    관심
+                </div>
+                <div style={{width: "100%", height: "500px", border: "1px solid blue"}}>
+                    <img src={hoho[0].split(",")[0].replace("../client/public", ".")} style={{width: "200px", height: "200px", objectFit: "cover"}}></img>
+                    <div>{`${hoho[0].split(",")[1]}`}</div>
+                    
+                </div>
+            </div>
+        );
+    }
+
+    const onClickFavorite = () => {
+
     }
 
     const userInfo = () => {
@@ -168,7 +190,7 @@ export default function Mypage(props) {
                     <div style={{ width: "500px", height: "80px", borderLeft: "3px solid gray" ,position: "relative", left: "500px"}}>
                         <div style={{width: "100px", height: "80px", marginLeft: "40px", fontSize: "20px"}}>
                             관심
-                            <div style={{ marginTop: "20px", cursor: "pointer"}}>
+                            <div onClick={() => {onClickFavorite(); test4(!test3)}} style={{ marginTop: "20px", cursor: "pointer"}}>
                                 <img src='./Image/FavoriteBorder.png' style={{width: "26px", height: "24px", objectFit: "cover", display: "inline-block"}}></img>
                                 <div style={{ fontSize: "23px" ,color: "rgb(238,21,85)", fontWeight: "bold", display: "inline-block", position:"relative", top:"-5px", left: "10px"}}>{`${favoriteCount}`}</div>
                             </div>
@@ -181,7 +203,9 @@ export default function Mypage(props) {
                 <div>
                     {test1 ? test(): null}
                 </div>
-                
+                <div>
+                    {test3 ? showFavoriteSec() : null}
+                </div>
             </div>
         </div>
     )

@@ -22,7 +22,6 @@ export default function ProductPage(props) {
       overflowY: "auto"
     },
     prodct_content : {
-      border: "1px solid black",
       width: "1200px",
       height: "800px",
       margin: "auto",
@@ -36,26 +35,27 @@ export default function ProductPage(props) {
     },
     image_photo_bix : {
       display: "inline-block",
-      border: "1px solid red",
       width: "500px",
       height: "auto",
       margin: "auto",
       marginTop: "50px",
     },
     product_titel_detail_content : {
-      border: "1px solid blue",
       minWidth: "700px",
       maxWidth: "700px",
       minHeight: "500px",
       maxHeight: "500px",
       margin: "auto",
-      marginLeft: "500px",
+      marginLeft: "600px",
       marginTop: "-506px",
+      fontSize: "20px",
     },
     product_detail_title : {
       marginLeft: "20px",
       marginTop: "30px",
       marginBottom: "50px",
+      fontSize: "25px",
+      fontWeight: "bold"
     },
     product_list_box : {
       margin: "auto",
@@ -78,7 +78,6 @@ export default function ProductPage(props) {
       marginTop: "-50x"
     },
     content_detail_big_box : {
-      border: "1px solid red",
       width: "1200px",
       height: "auto",
       margin: "auto",
@@ -97,7 +96,6 @@ export default function ProductPage(props) {
     },
     content_detail_img_big_box : {
       margin: "auto",
-      border: "1px solid blue",
       width: "1200px",
       height: "auto",
       textAlign: "center",
@@ -105,7 +103,6 @@ export default function ProductPage(props) {
       overflow: "hidden"
     },
     content_detail_img : {
-      border: "1px solid orange",
       width: "100%",
       height: "600px",
       objectFit : "none"
@@ -114,31 +111,28 @@ export default function ProductPage(props) {
       margin: "auto",
       marginTop: "20px",
       textAlign: "center",
-      border: "1px solid black",
     },
     review_big_box : {
-      border: "1px solid black",
-      height: "500px"
+      height: "500px",
+      marginTop: "80px"
     },
     best_review_box : {
       display: "inline-block",
-      border: "1px solid red",
       width: "400px",
       height: "300px",
       marginRight: "100px"
     },
     worst_review_box : {
       display: "inline-block",
-      border: "1px solid red",
       width: "400px",
       height: "300px",
       
     },
     review_text : {
-      border: "1px solid black"
+
     },
     detail_review_sec : {
-      border: "1px solid blue",
+
       height: "235px",
     },
   };
@@ -182,6 +176,11 @@ export default function ProductPage(props) {
   const worstImageRef = useRef(null);
   const borderHeart = useRef(null);
   const fullHeart = useRef(null);
+  const detail = useRef(null);
+  const review = useRef(null);
+  const recom = useRef(null);
+  const reviewSec = useRef(null);
+  const recomSec = useRef(null);
   
   const detailImageSize = new Image();
 
@@ -248,7 +247,7 @@ export default function ProductPage(props) {
   }
 
   const getFavoriteProduct = () => {
-    axios.post("/api/getFavoriteProduct", {PdcNumber : PdcNumber, name : window.sessionStorage.getItem("name")})
+    axios.post("/api/getFavoriteProduct", {PdcNumber : PdcNumber, id : window.sessionStorage.getItem("ID")})
     .then( res => {
       const body = res.data;
       setFavoriteProduct(body);
@@ -312,6 +311,50 @@ export default function ProductPage(props) {
     }
   }
 
+  const onClcikDetail = () => {
+    detail.current.style.backgroundColor = "white";
+    review.current.style.backgroundColor = "#fafafa";
+    recom.current.style.backgroundColor = "#fafafa";
+    
+    detail.current.style.borderBottom = "none";
+    review.current.style.borderBottom = "1px solid black";
+    recom.current.style.borderBottom = "1px solid black";
+
+    detail.current.style.color = "#111";
+    review.current.style.color = "#555";
+    recom.current.style.color = "#555";
+  }
+  const onClickReview = () => {
+    detail.current.style.backgroundColor = "#fafafa";
+    review.current.style.backgroundColor = "white";
+    recom.current.style.backgroundColor = "#fafafa";
+
+    detail.current.style.borderBottom = "1px solid black";
+    review.current.style.borderBottom = "none";
+    recom.current.style.borderBottom = "1px solid black";
+
+    detail.current.style.color = "#555";
+    review.current.style.color = "#111";
+    recom.current.style.color = "#555";
+
+    reviewSec.current.scrollIntoView();
+  }
+  const onClickRecom = () => {
+    detail.current.style.backgroundColor = "#fafafa";
+    review.current.style.backgroundColor = "#fafafa";
+    recom.current.style.backgroundColor = "white";
+
+    detail.current.style.borderBottom = "1px solid black";
+    review.current.style.borderBottom = "1px solid black";
+    recom.current.style.borderBottom = "none";
+
+    detail.current.style.color = "#555";
+    review.current.style.color = "#555";
+    recom.current.style.color = "#111";
+
+    recomSec.current.scrollIntoView();
+  }
+
 
   const settings = {
     dots: true,
@@ -331,7 +374,6 @@ export default function ProductPage(props) {
           <img src="./Image/Favorite.png" onClick={() => removeFavoriteProduct()} style={{width: "28px", height: "25px", objectFit: "cover",position:"relative" ,left: "1150px", top: "20px", cursor: "pointer"}}></img>
         </div>
         <div style={styles.product_type}>
-          [상품 분류]
         </div>
         <img style={styles.image_photo_bix} ref={productMainIamge}></img>
         <div style={styles.product_titel_detail_content}>
@@ -389,9 +431,17 @@ export default function ProductPage(props) {
           style={styles.content_detail_text_box}
         >
           <div
-            style={styles.content_detail_text}
+            style={{margin: "auto", marginTop: "20px", marginLeft: "20px", borderTop:"3px solid #555", height: "100px", width: "1179px"}}
           >
-            [상세내용]
+            <div ref={detail} onClick={() => onClcikDetail()} style={{ width: "392px", height: "100px", display: "inline-block", textAlign: "center", lineHeight: "100px", fontSize: "18px", backgroundColor: "white", color: "#111", fontWeight: "bold", cursor: "pointer", border: "1px solid black", borderTop: "0px", borderBottom: "none" ,marginTop: "-1px"}}>
+              상품상세
+            </div>
+            <div ref={review} onClick={() => onClickReview()} style={{ width: "391px", height: "100px" , display: "inline-block", textAlign: "center", lineHeight: "100px", fontSize: "18px", backgroundColor: "#fafafa", color: "#555", fontWeight: "bold", cursor: "pointer", borderRight: "1px solid black", borderBottom: "1px solid black", marginTop: "-1px"}}>
+              리뷰
+            </div>
+            <div ref={recom} onClick={() => onClickRecom()} style={{ width: "391px", height: "100px" ,  display: "inline-block", textAlign: "center", lineHeight: "100px", fontSize: "18px", backgroundColor: "#fafafa", color: "#555", fontWeight: "bold", cursor: "pointer", borderRight: "1px solid black", borderBottom: "1px solid black", marginTop: "-1px"}}>
+              추천상품
+            </div>
           </div>
           <div style={styles.content_detail_img_big_box}>
             <img ref={productDetail} style = {styles.content_detail_img}></img>
@@ -405,7 +455,8 @@ export default function ProductPage(props) {
             <Button ref={closedButton} style={{display: "none"}} variant="outlined" onClick={() => closedProductDetailImg()}>
               상세설명 접기
             </Button>
-            <div style={styles.review_big_box}>
+            <div style={{width: "1000px", border: "1px solid black", margin: "auto", marginTop: "200px"}}></div>
+            <div style={styles.review_big_box} ref={reviewSec}>
               <div style={styles.best_review_box}>
                 <div style={styles.review_text}>best 리뷰</div>
                 <div style={styles.detail_review_sec}>
@@ -418,7 +469,7 @@ export default function ProductPage(props) {
                       {`${bestReview}`}
                     </div>
                   </div>
-                  <img ref={bestImageRef} style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px", position: "relative", top: "-60px", objectFit: "cover"}}></img>
+                  <img ref={bestImageRef} style={{ width: "100px", height: "100px", marginLeft: "230px", position: "relative", top: "-60px", objectFit: "cover"}}></img>
                 </div>
               </div>
               <div style={styles.worst_review_box}>
@@ -433,19 +484,19 @@ export default function ProductPage(props) {
                       {`${worstReview}`}
                     </div>
                   </div>
-                  <img ref={worstImageRef} style={{ width: "100px", height: "100px", border: "1px solid black", marginLeft: "230px", position: "relative", top: "-60px", objectFit: "cover" }}></img>
+                  <img ref={worstImageRef} style={{ width: "100px", height: "100px", marginLeft: "230px", position: "relative", top: "-60px", objectFit: "cover" }}></img>
                 </div>
               </div> 
             </div>
           </div>
-          <div style={{width: "1200px", height: "400px", border: "1px solid orange" }}>
-            <div style={{ width: "1100px",border: "1px solid blue", margin: "auto"}}>
+          <div style={{width: "1200px", height: "400px"}}>
+            <div ref={recomSec} style={{ width: "1100px", margin: "auto"}}>
               <h2> 추천 상품</h2>
-              <StyledSlider {...settings} style={{width: "1000px", border: "1px solid red", margin: "auto"}}>
+              <StyledSlider {...settings} style={{width: "1000px", margin: "auto"}}>
                 {
                   recomProductInfo.map((product) => (
                     <div key={product} onClick={ (e) => {window.sessionStorage.setItem("productID", product.recomPdcNumber); window.location.reload();}}>
-                      <div style={{ border: "1px solid black",width: "140px", height: "210px",marginRight: "20px"}}>
+                      <div style={{ width: "140px", height: "210px",marginRight: "20px"}}>
                         <img src={product.recomMainImageRoute.replace("../client/public", ".")} style={{ width: "100px", height: "100px", margin: "auto", marginTop: "10px", objectFit:"cover"}}></img>
                         <div style={{fontSize: "15px", height: "40px", overflow: "hidden"}}>{`${product.recomProductName}`}</div>
                         <div style={{textAlign: "right"}}>{`${product.recomProductPrice}원`}</div>
