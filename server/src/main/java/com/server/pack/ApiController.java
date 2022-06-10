@@ -233,6 +233,62 @@ public class ApiController {
         return response;
     }
 
+    @RequestMapping(value = "/api/userInfoChange", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String UserInfoChange(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String encodedPassword = passwordEncoder.encode(body.get("userPassword"));
+
+            String sql = "UPDATE account SET ";
+
+            int test = Integer.parseInt(body.get("level"));
+
+            boolean test1 = (test == 1);
+
+            System.out.println(test1);
+
+            if (Integer.parseInt(body.get("level")) == 1) {
+                sql += "name=\"" + (body.get("name")) + "\", userPassword=\"" +  encodedPassword  + "\", " +
+                        "cellphoneNumber=\""+ (body.get("cellphoneNumber")) + "\" WHERE userID=\"" + (body.get("userID")) + "\"";
+            } else if (Integer.parseInt(body.get("level")) == 2) {
+                sql += "companyName=\"" + (body.get("name")) + "\", userPassword=\"" + encodedPassword + "\", " +
+                        "cellphoneNumber=\""+ (body.get("cellphoneNumber")) + "\", businessName=\"" + (body.get("businessName")) + "\"," +
+                        "companyNumber=\"" + (body.get("companyNumber")) + "\" WHERE userID= \"" + (body.get("userID")) + "\"";
+            }
+
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
+    }
+
+    @RequestMapping(value = "/api/addPet", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String AddPet(@RequestBody Map<String, String> body) {
+        ResultSet rs = null;
+        try {
+            Class.forName(DBDriver);
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+
+            String sql = "UPDATE account SET petType=\"" + (body.get("petType")) + "\", petKind=\""+
+                    (body.get("petKind")) + "\" WHERE userId=\"" + (body.get("userID")) + "\"";
+
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {};
+
+        return "{\"result\": \"OK\"}";
+    }
+
+
+
     @RequestMapping(value = "/api/GetProductInfo", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public Map<String, Object> GetProductInfo(@RequestBody Map<String, String> body) {

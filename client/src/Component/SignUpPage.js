@@ -113,7 +113,7 @@ export default function SignUpPage(props) {
 
   const PasswordConfirm = (confirm, password) => {
     setUserPasswordConfirm(confirm);
-    
+    console.log(confirm);
     if (password === confirm || "" === confirm) {
       setIsUserPasswordSame(true);
     }

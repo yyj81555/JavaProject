@@ -186,8 +186,6 @@ export default function ProductPage(props) {
 
   const PdcNumber = window.sessionStorage.getItem("productID"); 
 
-  window.sessionStorage.getItem("ID");//로그인상태 유지
-
   useEffect( () => {
     getProductInfo();
     getSimilarProduct();
@@ -355,7 +353,6 @@ export default function ProductPage(props) {
     recomSec.current.scrollIntoView();
   }
 
-
   const settings = {
     dots: true,
     infinite: true,
@@ -433,6 +430,9 @@ export default function ProductPage(props) {
           <div
             style={{margin: "auto", marginTop: "20px", marginLeft: "20px", borderTop:"3px solid #555", height: "100px", width: "1179px"}}
           >
+          <div
+            style={{margin: "auto", marginTop: "20px", marginLeft: "20px", borderTop:"3px solid #555", height: "100px", width: "1179px"}}
+          >
             <div ref={detail} onClick={() => onClcikDetail()} style={{ width: "392px", height: "100px", display: "inline-block", textAlign: "center", lineHeight: "100px", fontSize: "18px", backgroundColor: "white", color: "#111", fontWeight: "bold", cursor: "pointer", border: "1px solid black", borderTop: "0px", borderBottom: "none" ,marginTop: "-1px"}}>
               상품상세
             </div>
@@ -442,6 +442,7 @@ export default function ProductPage(props) {
             <div ref={recom} onClick={() => onClickRecom()} style={{ width: "391px", height: "100px" ,  display: "inline-block", textAlign: "center", lineHeight: "100px", fontSize: "18px", backgroundColor: "#fafafa", color: "#555", fontWeight: "bold", cursor: "pointer", borderRight: "1px solid black", borderBottom: "1px solid black", marginTop: "-1px"}}>
               추천상품
             </div>
+          </div>
           </div>
           <div style={styles.content_detail_img_big_box}>
             <img ref={productDetail} style = {styles.content_detail_img}></img>

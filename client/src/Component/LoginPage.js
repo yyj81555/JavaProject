@@ -4,10 +4,10 @@ import { useNavigate, Link } from 'react-router-dom';
 
 import { TextField } from '@mui/material';
 import { Button } from 'react-bootstrap';
-
 import {KAKAO_AUTH_URL} from './Oauth.js';
 
 export default function LoginPage(props) {
+    
     const [userID, setUserID] = React.useState("");
     const [userPassword, setUserPassword] = React.useState("");
     const [msg, setMSG] = React.useState("");
@@ -15,6 +15,7 @@ export default function LoginPage(props) {
     
     const styles = {
         dimmed_layer_wrapper : {
+            
             top:80,
             right:0,
             bottom:0,
@@ -47,8 +48,6 @@ export default function LoginPage(props) {
                 const body = res.data;
         
                 setUserInfo(body);
-
-                console.log(body);
             
                 window.sessionStorage.setItem("level", body.level);
                 window.sessionStorage.setItem("userPassword", body.userPassword);
@@ -60,18 +59,21 @@ export default function LoginPage(props) {
                 window.sessionStorage.setItem("companyNumber", body.companyNumber);
                 window.sessionStorage.setItem("petType", body.petType);
                 window.sessionStorage.setItem("petKind", body.petKind);
+
                 console.log(body.name);
                 console.log(body.companyName);
                 console.log(body.cellphoneNumber);
-
-            }).catch( res => console.log(res))
-
-            //navigate("/");
-            window.sessionStorage.setItem("ID", userID);
-            //window.location.reload();
+                window.sessionStorage.setItem("ID", userID);
+            },).catch( res => console.log(res))
+        setTimeout(() => {
+            window.location.href="MainPage";
+        }, 50);
+            
+            
         }
     }
-   
+
+    
 
     const OnClickSignUp = async () => {
        
